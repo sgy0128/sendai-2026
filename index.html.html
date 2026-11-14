@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#2B3A55">
+<title>仙台冬の旅 2026</title>
+
+<!-- 字型：明朝體（Noto Serif TC / Shippori Mincho） -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Shippori+Mincho:wght@500;700&display=swap">
+
+<!-- 地圖：Leaflet（免金鑰、免申請） -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+<style>
+  :root {
+    --washi:  #F4EFE3;   /* 和紙 */
+    --paper:  #FBF8F0;
+    --sumi:   #1F1B16;   /* 墨 */
+    --sumi-2: #5A5348;
+    --ai:     #2B3A55;   /* 藍 */
+    --ai-2:   #8FA3C4;
+    --shu:    #B8322A;   /* 朱 */
+    --kin-d:  #7A5A22;   /* 金（文字用深色） */
+    --matsu:  #4E6B4F;   /* 松 */
+    --onsen:  #2F6B72;
+    --line:   rgba(31,27,22,.18);
+    --mincho: "Shippori Mincho", "Noto Serif TC", "Hiragino Mincho ProN", "Yu Mincho", "PMingLiU", serif;
+    --serif:  "Noto Serif TC", "Shippori Mincho", "Hiragino Mincho ProN", "Yu Mincho", "PMingLiU", serif;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--washi);
+    color: var(--sumi);
+    font-family: var(--serif);
+    font-size: 17px;
+    line-height: 1.75;
+  }
+  /* 和紙の紙質感 */
+  body::before {
+    content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: .5;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .4 0 0 0 0 .33 0 0 0 0 .22 0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  h1, h2, h3, p { margin: 0; }
+  button { font-family: inherit; }
+  :focus-visible { outline: 3px solid var(--shu); outline-offset: 2px; }
+
+  /* ---------- 通用元件 ---------- */
+  .card {
+    position: relative;
+    background: var(--paper);
+    border: 1px solid var(--sumi);
+    outline: 1px solid var(--sumi);
+    outline-offset: -5px;
+    padding: 18px 22px;
+  }
+  .kicker { font-size: .78rem; letter-spacing: .18em; color: var(--sumi-2); }
+  .dim { color: var(--sumi-2); }
+  .btn {
+    display: inline-flex; align-items: baseline; gap: .6em; justify-content: center;
+    min-height: 44px; padding: 8px 20px;
+    background: var(--ai); color: var(--washi);
+    border: 1px solid var(--ai); cursor: pointer;
+    font-size: .95rem; letter-spacing: .12em; text-decoration: none;
+    box-shadow: 3px 3px 0 rgba(31,27,22,.25);
+    transition: background .15s;
+  }
+  .btn small { font-size: .7rem; letter-spacing: .2em; opacity: .8; }
+  .btn:hover { background: #3A4D70; }
+  .btn:active { transform: translate(2px,2px); box-shadow: 1px 1px 0 rgba(31,27,22,.25); }
+  .btn.ghost { background: var(--paper); color: var(--ai); border-color: var(--ai); box-shadow: none; }
+  .btn.ghost[aria-pressed="true"] { background: var(--ai); color: var(--washi); }
+  .btn.shu { background: var(--shu); border-color: var(--shu); }
+  .btn.shu:hover { background: #9A2821; }
+
+  .tag {
+    display: inline-block; vertical-align: 2px;
+    padding: 0 7px; margin-left: .35em;
+    font-size: .72rem; letter-spacing: .15em; line-height: 1.55;
+    border: 1px solid currentColor; border-radius: 2px;
+  }
+  .t-景點 { color: var(--ai); }
+  .t-美食 { color: var(--shu); }
+  .t-交通 { color: var(--sumi-2); }
+  .t-住宿 { color: var(--matsu); }
+  .t-購物 { color: var(--kin-d); }
+  .t-溫泉 { color: var(--onsen); }
+  .t-其他 { color: var(--sumi-2); }
+  .t-航班 { background: var(--ai); color: var(--washi); border-color: var(--ai); }
+
+  /* ---------- Hero ---------- */
+  .hero {
+    position: relative; overflow: hidden; z-index: 1;
+    min-height: 460px;
+    background: linear-gradient(180deg, #C9D4E3 0%, #E3E5E3 58%, #F4EFE3 100%);
+  }
+  .hero-art { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .snow {
+    position: absolute; inset: 0; pointer-events: none;
+    background-image:
+      radial-gradient(circle, rgba(255,255,255,.95) 1.6px, transparent 2.2px),
+      radial-gradient(circle, rgba(255,255,255,.75) 1px, transparent 1.7px);
+    background-size: 130px 140px, 70px 140px;
+    background-position: 0 0, 30px 40px;
+    animation: snow 16s linear infinite;
+  }
+  @keyframes snow { to { background-position: 0 140px, 30px 180px; } }
+  .hero-inner {
+    position: relative; max-width: 960px; margin: 0 auto;
+    padding: 48px 24px 0;
+    display: flex; align-items: flex-start; gap: 18px;
+  }
+  .vtitle {
+    order: 2;
+    writing-mode: vertical-rl;
+    font-family: var(--mincho); font-weight: 700;
+    font-size: clamp(56px, 13vw, 104px);
+    letter-spacing: .12em; line-height: 1.05;
+    color: var(--sumi);
+  }
+  .vsub {
+    order: 1;
+    writing-mode: vertical-rl;
+    font-family: var(--mincho); font-weight: 500;
+    font-size: clamp(16px, 3.6vw, 22px); letter-spacing: .5em;
+    margin-top: 8px; padding-left: 12px;
+    border-left: 2px solid var(--shu);
+    color: var(--sumi);
+  }
+  .hanko {
+    order: 3; margin: 6px 0 0 6px;
+    width: 56px; height: 56px; flex: none;
+    display: grid; place-content: center; text-align: center;
+    background: var(--shu); color: var(--washi);
+    font-family: var(--mincho); font-weight: 700; font-size: 1.4rem; line-height: 1.05;
+    border-radius: 4px; transform: rotate(-5deg);
+    box-shadow: inset 0 0 0 2px var(--shu), inset 0 0 0 3.5px var(--washi);
+    opacity: .94;
+  }
+
+  /* 青海波の帯＋カウントダウン */
+  .band { position: relative; z-index: 1; background: var(--ai); padding: 16px 16px; display: flex; justify-content: center; border-top: 3px double var(--washi); }
+  .band-bg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .plate {
+    position: relative; text-align: center;
+    background: var(--ai); color: var(--washi);
+    padding: 8px 26px 10px;
+    border: 1px solid var(--washi); outline: 1px solid var(--washi); outline-offset: 3px;
+    font-family: var(--mincho); letter-spacing: .12em;
+  }
+  .plate .dates { font-size: .78rem; opacity: .85; letter-spacing: .25em; }
+  .plate .count { font-size: 1.05rem; }
+  .plate .count b { font-size: 1.7rem; font-weight: 700; margin: 0 .1em; color: #fff; }
+
+  /* ---------- 版面 ---------- */
+  main { position: relative; z-index: 1; max-width: 960px; margin: 0 auto; padding: 0 20px 72px; }
+  section { margin-top: 56px; }
+  .sec-h {
+    position: relative; display: flex; align-items: baseline; gap: 14px;
+    padding-bottom: 10px; margin-bottom: 22px;
+    font-family: var(--mincho); font-weight: 700; font-size: 1.7rem; color: var(--ai);
+    border-bottom: 1px solid var(--line);
+  }
+  .sec-h::after { content: ""; position: absolute; left: 0; bottom: -2px; width: 64px; height: 3px; background: var(--shu); }
+  .sec-h .num { font-size: 1rem; color: var(--shu); border: 1.5px solid var(--shu); padding: 3px 6px; line-height: 1; }
+  .sec-h small { font-family: var(--serif); font-size: .82rem; font-weight: 400; letter-spacing: .25em; color: var(--sumi-2); }
+
+  .grid { display: grid; gap: 16px; }
+  .grid.two { grid-template-columns: repeat(2, 1fr); }
+  .grid.four { grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); margin-top: 16px; }
+
+  /* 切符 */
+  .ticket { display: flex; padding: 0; }
+  .ticket .main { flex: 1; padding: 16px 20px; }
+  .ticket .route { font-family: var(--mincho); font-weight: 700; font-size: 1.45rem; line-height: 1.4; margin: 4px 0 6px; }
+  .ticket .route .arrow { color: var(--shu); margin: 0 .2em; }
+  .ticket .meta { font-size: .95rem; }
+  .ticket .stub {
+    position: relative; flex: none; width: 64px;
+    display: flex; align-items: center; justify-content: center;
+    writing-mode: vertical-rl; letter-spacing: .4em; font-weight: 700; color: var(--shu);
+    border-left: 2px dashed var(--sumi-2);
+  }
+  .ticket .stub::before, .ticket .stub::after {
+    content: ""; position: absolute; left: -9px; width: 16px; height: 16px; border-radius: 50%;
+    background: var(--washi); border: 1px solid var(--sumi);
+  }
+  .ticket .stub::before { top: -9px; clip-path: inset(50% 0 0 0); }
+  .ticket .stub::after  { bottom: -9px; clip-path: inset(0 0 50% 0); }
+
+  .stay .name { font-family: var(--mincho); font-weight: 700; font-size: 1.2rem; margin: 2px 0; }
+  .stay .meta { font-size: .88rem; }
+  .addr { font-size: .78rem; line-height: 1.5; margin-top: 2px; }
+  .fill { border-bottom: 1px dashed var(--sumi-2); }
+
+  /* ---------- 日別頁籤 ---------- */
+  .tabs { display: flex; gap: 8px; overflow-x: auto; padding: 4px 2px 8px; scroll-snap-type: x proximity; }
+  .tab {
+    position: relative; flex: 1 0 78px; scroll-snap-align: start;
+    padding: 9px 6px 8px; text-align: center; cursor: pointer;
+    background: var(--paper); color: var(--sumi);
+    border: 1px solid var(--sumi);
+  }
+  .tab .d { display: block; font-size: .68rem; letter-spacing: .22em; color: var(--sumi-2); }
+  .tab .date { display: block; font-family: var(--mincho); font-weight: 700; font-size: 1.4rem; line-height: 1.3; }
+  .tab .wd { display: block; font-size: .78rem; line-height: 1.2; }
+  .tab[aria-selected="true"] { background: var(--ai); color: var(--washi); border-color: var(--ai); }
+  .tab[aria-selected="true"] .d { color: #C9D3E6; }
+  .tab[aria-selected="true"]::before { content: ""; position: absolute; left: -1px; right: -1px; top: -1px; height: 4px; background: var(--shu); }
+
+  .panel { margin-top: 10px; padding: 22px 26px 12px; }
+  .day-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 14px; flex-wrap: wrap; padding-bottom: 14px; border-bottom: 1px dashed var(--sumi-2); }
+  .day-head h3 { font-family: var(--mincho); font-weight: 700; font-size: 1.6rem; line-height: 1.35; color: var(--ai); }
+  .stay-line { font-size: .92rem; margin-top: 2px; }
+  .stay-line .tag { margin-left: 0; margin-right: .5em; }
+  .tip {
+    margin-top: 16px; padding: 8px 14px; font-size: .92rem;
+    background: rgba(143,163,196,.18); border-left: 3px solid var(--ai);
+  }
+  .tip b { color: var(--ai); margin-right: .6em; letter-spacing: .15em; }
+
+  /* ---------- 時間軸 ---------- */
+  .timeline { list-style: none; margin: 22px 0 0; padding: 0; }
+  .ev { display: grid; grid-template-columns: 4.3rem 24px 1fr; column-gap: 10px; }
+  .ev .time { text-align: right; padding-top: 1px; font-family: var(--mincho); font-weight: 700; font-size: 1.02rem; line-height: 1.25; font-variant-numeric: tabular-nums; }
+  .ev .time .end { display: block; font-weight: 500; font-size: .8rem; color: var(--sumi-2); }
+  .ev .rail { position: relative; }
+  .ev .rail::before { content: ""; position: absolute; left: 50%; top: 0; bottom: 0; width: 0; margin-left: -1px; border-left: 2px solid var(--sumi); }
+  .ev:first-child .rail::before { top: 11px; }
+  .ev:last-child .rail::before { bottom: auto; height: 11px; }
+  .ev .rail::after { content: ""; position: absolute; left: 50%; top: 5px; width: 12px; height: 12px; margin-left: -6px; border-radius: 50%; background: var(--paper); border: 2px solid var(--sumi); }
+  .ev.has-pin .rail::after { display: none; }
+  .pin-n {
+    position: absolute; left: 50%; top: -1px; transform: translateX(-50%);
+    width: 24px; height: 24px; border-radius: 50%;
+    background: var(--shu); color: #fff; text-align: center;
+    font: 700 .78rem/24px var(--mincho);
+    box-shadow: 0 0 0 3px var(--paper);
+  }
+  .ev .body { padding-bottom: 20px; }
+  .ev .name { font-weight: 600; font-size: 1.06rem; }
+  .ev .note { margin-top: 2px; font-size: .88rem; color: var(--sumi-2); line-height: 1.6; }
+  .ev .note.warn { color: var(--shu); background: rgba(184,50,42,.07); border-left: 3px solid var(--shu); padding: 3px 10px; margin-top: 6px; }
+  .ev .note.warn b { margin-right: .6em; letter-spacing: .15em; }
+  .ev.move .body { padding-bottom: 14px; }
+  .ev.move .name { font-weight: 400; font-size: .95rem; color: var(--sumi-2); }
+  .ev.move .rail::before { border-left: 2px dashed var(--sumi-2); }
+  .empty { text-align: center; padding: 40px 0; color: var(--sumi-2); }
+
+  /* ---------- 行前準備 ---------- */
+  .prep { grid-template-columns: 1fr 1fr; align-items: start; }
+  .prep h3 { font-family: var(--mincho); font-size: 1.15rem; color: var(--ai); margin-bottom: 8px; }
+  .todo { list-style: none; margin: 0; padding: 0; }
+  .todo label { display: flex; align-items: center; gap: 12px; min-height: 44px; padding: 6px 2px; border-bottom: 1px dotted var(--line); cursor: pointer; }
+  .todo input {
+    appearance: none; -webkit-appearance: none; flex: none; margin: 0;
+    width: 22px; height: 22px; display: grid; place-content: center;
+    background: var(--paper); border: 1.5px solid var(--sumi);
+  }
+  .todo input::after { content: ""; width: 14px; height: 14px; background: var(--shu); transform: scale(0); transition: transform .12s; clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%); }
+  .todo input:checked::after { transform: scale(1); }
+  .todo input:checked + span { color: var(--sumi-2); text-decoration: line-through; text-decoration-color: var(--shu); }
+  .tips { list-style: none; margin: 0; padding: 0; }
+  .tips li { display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px dotted var(--line); font-size: .95rem; line-height: 1.65; }
+  .tips li:last-child, .todo li:last-child label { border-bottom: 0; }
+  .tips .day { flex: none; align-self: flex-start; margin-top: 3px; padding: 0 8px; font-size: .72rem; letter-spacing: .12em; line-height: 1.7; background: var(--shu); color: #fff; }
+
+  footer { position: relative; z-index: 1; background: var(--ai); color: var(--washi); text-align: center; padding: 22px 16px calc(22px + env(safe-area-inset-bottom)); font-family: var(--mincho); letter-spacing: .3em; border-top: 3px double var(--washi); overflow: hidden; }
+  footer span { position: relative; background: var(--ai); padding: 4px 16px; }
+
+  /* ---------- 地圖視窗 ---------- */
+  .modal { position: fixed; inset: 0; z-index: 1000; display: none; align-items: center; justify-content: center; padding: 12px; background: rgba(31,27,22,.55); }
+  .modal.open { display: flex; }
+  .sheet {
+    display: flex; flex-direction: column;
+    width: 100%; max-width: 920px; height: min(90vh, 780px); height: min(90dvh, 780px);
+    padding: 16px 20px; background: var(--paper);
+    border: 1px solid var(--sumi); outline: 1px solid var(--sumi); outline-offset: -5px;
+  }
+  .sheet-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  .sheet-head h3 { font-family: var(--mincho); font-size: 1.3rem; color: var(--ai); }
+  .tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 10px; }
+  .tools .grow { flex: 1; }
+  .tools .btn { min-height: 40px; padding: 4px 14px; font-size: .88rem; }
+  #map { flex: 1; min-height: 220px; margin-top: 10px; border: 1px solid var(--sumi); background: #E8E4D8; }
+  .chips { display: flex; gap: 8px; overflow-x: auto; padding: 10px 0 4px; }
+  .chip { flex: none; display: inline-flex; align-items: center; gap: 7px; min-height: 40px; padding: 4px 12px 4px 6px; background: var(--paper); border: 1px solid var(--sumi); cursor: pointer; font-size: .88rem; color: var(--sumi); }
+  .chip b { width: 22px; height: 22px; border-radius: 50%; background: var(--shu); color: #fff; font: 700 .72rem/22px var(--mincho); text-align: center; }
+  .legal { margin-top: 6px; font-size: .74rem; line-height: 1.5; color: var(--sumi-2); }
+  .pin { width: 30px; height: 30px; border-radius: 50%; background: var(--shu); color: #fff; border: 2px solid var(--washi); box-shadow: 0 0 0 1.5px var(--sumi), 0 2px 5px rgba(0,0,0,.3); font: 700 .85rem/26px var(--mincho); text-align: center; }
+  .leaflet-container { font-family: var(--serif); }
+  .leaflet-tooltip { background: var(--paper); color: var(--sumi); border: 1px solid var(--sumi); border-radius: 0; box-shadow: none; font-family: var(--serif); }
+  .leaflet-popup-content-wrapper { border-radius: 0; background: var(--paper); color: var(--sumi); border: 1px solid var(--sumi); }
+  .leaflet-popup-tip { background: var(--paper); }
+  .pop a { color: var(--ai); }
+  .map-error { padding: 24px; text-align: center; color: var(--shu); }
+
+  /* ---------- 手機版 ---------- */
+  @media (max-width: 640px) {
+    body { font-size: 16px; }
+    .grid.two, .prep { grid-template-columns: 1fr; }
+    .ticket .stub { width: 52px; }
+    .panel { padding: 18px 16px 6px; }
+    .card { padding: 16px; }
+    .ev { grid-template-columns: 3.7rem 22px 1fr; column-gap: 8px; }
+    .sec-h { font-size: 1.45rem; }
+    .sec-h small { display: none; }
+    .sheet { padding: 12px 12px; height: calc(100dvh - 24px); max-height: none; }
+    .hero { min-height: 420px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .snow { animation: none; }
+    .btn, .todo input::after { transition: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ Hero ============ -->
+<header class="hero">
+  <svg class="hero-art" viewBox="0 0 1200 400" preserveAspectRatio="xMidYMax slice" aria-hidden="true" focusable="false">
+    <circle cx="690" cy="150" r="62" fill="#B8322A" opacity=".92"/>
+    <path d="M0 290 L80 262 L150 280 L240 225 L330 270 L410 238 L500 285 L600 232 L700 276 L790 240 L880 282 L980 228 L1070 272 L1140 250 L1200 268 L1200 400 L0 400Z" fill="#A9B4C4" opacity=".6"/>
+    <path d="M0 330 L100 292 L190 322 L290 268 L380 318 L470 280 L560 330 L670 285 L760 325 L860 272 L960 322 L1060 286 L1150 318 L1200 300 L1200 400 L0 400Z" fill="#6F7F99"/>
+    <g fill="#F4EFE3">
+      <polygon points="290,268 272,288 282,284 290,295 299,283 309,290"/>
+      <polygon points="470,280 452,300 462,296 470,307 479,295 489,302"/>
+      <polygon points="670,285 652,305 662,301 670,312 679,300 689,307"/>
+      <polygon points="860,272 842,292 852,288 860,299 869,287 879,294"/>
+      <polygon points="1060,286 1042,306 1052,302 1060,313 1069,301 1079,308"/>
+    </g>
+    <path d="M0 312 Q300 296 600 312 T1200 306 L1200 328 Q900 340 600 328 T0 334Z" fill="#F4EFE3" opacity=".55"/>
+    <path d="M0 372 L90 345 L170 366 L270 338 L370 368 L470 346 L570 372 L680 342 L780 370 L880 344 L990 372 L1090 348 L1200 368 L1200 400 L0 400Z" fill="#2B3A55"/>
+    <path d="M0 360 Q300 346 600 360 T1200 356 L1200 372 Q900 380 600 372 T0 376Z" fill="#F4EFE3" opacity=".35"/>
+  </svg>
+  <div class="snow" aria-hidden="true"></div>
+  <div class="hero-inner">
+    <h1 class="vtitle">仙台</h1>
+    <p class="vsub">冬の旅</p>
+    <div class="hanko" aria-hidden="true">冬<br>旅</div>
+  </div>
+</header>
+
+<div class="band">
+  <svg class="band-bg" aria-hidden="true" focusable="false">
+    <defs>
+      <pattern id="seigaiha" width="40" height="20" patternUnits="userSpaceOnUse">
+        <g fill="#2B3A55" stroke="#8FA3C4" stroke-width="1" stroke-opacity=".55">
+          <circle cx="20" cy="0" r="20"/><circle cx="20" cy="0" r="15"/><circle cx="20" cy="0" r="10"/><circle cx="20" cy="0" r="5"/>
+          <circle cx="0" cy="10" r="20"/><circle cx="0" cy="10" r="15"/><circle cx="0" cy="10" r="10"/><circle cx="0" cy="10" r="5"/>
+          <circle cx="40" cy="10" r="20"/><circle cx="40" cy="10" r="15"/><circle cx="40" cy="10" r="10"/><circle cx="40" cy="10" r="5"/>
+          <circle cx="20" cy="20" r="20"/><circle cx="20" cy="20" r="15"/><circle cx="20" cy="20" r="10"/><circle cx="20" cy="20" r="5"/>
+        </g>
+      </pattern>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#seigaiha)"/>
+  </svg>
+  <div class="plate">
+    <div class="dates">2026.12.08 — 12.12　五日間</div>
+    <div class="count" id="count" aria-live="off">計算中…</div>
+  </div>
+</div>
+
+<main>
+
+  <!-- ============ 壹 基本資訊 ============ -->
+  <section aria-labelledby="h-info">
+    <h2 class="sec-h" id="h-info"><span class="num">壹</span>旅の基本<small>基本資訊</small></h2>
+
+    <!-- 想改航班、飯店：直接改下面的文字就好 -->
+    <div class="grid two">
+      <article class="card ticket">
+        <div class="main">
+          <p class="kicker">往路 ・ 12/8（二）</p>
+          <p class="route">台灣<span class="arrow">→</span>仙台</p>
+          <p class="meta">14:25 抵達仙台空港</p>
+          <p class="meta dim">航班：<span class="fill">（填入航班編號）</span></p>
+        </div>
+        <div class="stub" aria-hidden="true">往路</div>
+      </article>
+      <article class="card ticket">
+        <div class="main">
+          <p class="kicker">復路 ・ 12/12（六）</p>
+          <p class="route">仙台<span class="arrow">→</span>台灣</p>
+          <p class="meta">16:15 仙台起飛</p>
+          <p class="meta dim">航班：<span class="fill">（填入航班編號）</span></p>
+        </div>
+        <div class="stub" aria-hidden="true">復路</div>
+      </article>
+    </div>
+
+    <div class="grid four">
+      <article class="card stay">
+        <p class="kicker">12/8 – 12/10</p>
+        <p class="name">仙台市區・2 晚</p>
+        <p class="meta">仙台大都會大飯店</p>
+        <p class="meta dim addr">1 Chome-1-1 Central, Aoba Ward, Sendai</p>
+      </article>
+      <article class="card stay">
+        <p class="kicker">12/10 – 12/11</p>
+        <p class="name">藏王溫泉・1 晚</p>
+        <p class="meta">岩清水料理の宿 季の里</p>
+      </article>
+      <article class="card stay">
+        <p class="kicker">12/11 – 12/12</p>
+        <p class="name">仙台市區・1 晚</p>
+        <p class="meta">Hotel Premium Green Plus</p>
+        <p class="meta dim addr">2 Chome-6-8 Central, Aoba Ward, Sendai</p>
+      </article>
+      <article class="card stay">
+        <p class="kicker">租車 ・ 12/8 – 12/11</p>
+        <p class="name">冬季雪胎</p>
+        <p class="meta dim">12/8 取車 → 12/11 仙台還車</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- ============ 貳 每日行程 ============ -->
+  <section aria-labelledby="h-days">
+    <h2 class="sec-h" id="h-days"><span class="num">貳</span>日々の行程<small>每日行程</small></h2>
+    <div class="tabs" role="tablist" aria-label="選擇日期" id="tabs"></div>
+    <div id="panel" class="card panel" role="tabpanel" tabindex="0"></div>
+  </section>
+
+  <!-- ============ 參 行前準備 ============ -->
+  <section aria-labelledby="h-prep">
+    <h2 class="sec-h" id="h-prep"><span class="num">參</span>旅の支度<small>行前準備</small></h2>
+    <div class="grid prep">
+      <div class="card">
+        <h3>行前待辦</h3>
+        <ul class="todo" id="todo">
+          <li><label><input type="checkbox"><span>護照（效期 6 個月以上）</span></label></li>
+          <li><label><input type="checkbox"><span>台灣駕照＋日文譯本（租車用，出發前再確認）</span></label></li>
+          <li><label><input type="checkbox"><span>租車預約確認單（含冬季雪胎）</span></label></li>
+          <li><label><input type="checkbox"><span>機票與住宿憑證</span></label></li>
+          <li><label><input type="checkbox"><span>Visit Japan Web 入境登記</span></label></li>
+          <li><label><input type="checkbox"><span>日幣現金、信用卡</span></label></li>
+          <li><label><input type="checkbox"><span>eSIM／網卡</span></label></li>
+          <li><label><input type="checkbox"><span>防寒衣物、防滑好走的鞋</span></label></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>冬季重點提醒</h3>
+        <ul class="tips">
+          <li><span class="day">DAY 1</span><span>機場取車，確認是冬季雪胎。</span></li>
+          <li><span class="day">DAY 3</span><span>山寺要登山參觀；山形 → 藏王溫泉的路程已預留冬季路況時間。</span></li>
+          <li><span class="day">DAY 4</span><span>藏王纜車天候不佳可能停駛，停駛就改去狐狸村。</span></li>
+          <li><span class="day">DAY 4</span><span>宮城藏王狐狸村冬季最後入場約 15:30，別太晚到。</span></li>
+          <li><span class="day">DAY 4</span><span>藏王 → 狐狸村的實際時間視冬季路況而定。</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <svg class="band-bg" aria-hidden="true" focusable="false"><rect width="100%" height="100%" fill="url(#seigaiha)"/></svg>
+  <span>良い旅を</span>
+</footer>
+
+<!-- ============ 地圖視窗 ============ -->
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <div class="sheet">
+    <div class="sheet-head">
+      <h3 id="modal-title">路線預覽</h3>
+      <button class="btn ghost" id="modal-close" type="button">關閉</button>
+    </div>
+    <div class="tools">
+      <button class="btn ghost" type="button" data-base="pale" aria-pressed="true">淡色地圖</button>
+      <button class="btn ghost" type="button" data-base="std" aria-pressed="false">標準地圖</button>
+      <span class="grow"></span>
+      <a class="btn shu" id="gmaps" target="_blank" rel="noopener">在 Google Maps 開啟當日路線</a>
+    </div>
+    <div id="map"></div>
+    <div class="chips" id="chips"></div>
+    <p class="legal">圖釘位置為概略位置，連線是直線示意、不是實際路線。點圖釘可在 Google Maps 查確切位置，要導航請用右上方按鈕。</p>
+  </div>
+</div>
+
+<script>
+/* ==========================================================
+   ① 行程資料：想改行程，只要改這一段
+   ----------------------------------------------------------
+   t     時間（"09:00–10:00" 或 "09:00"）
+   name  行程名稱
+   tag   景點／美食／交通／住宿／購物／溫泉／航班／其他
+   note  備註（可省略）
+   warn  true → 備註用紅色「注意」樣式
+   must  true → 加上「必訪」標章
+   pos   [緯度, 經度]：有填才會出現在地圖上並編號
+         查法：Google Maps 對地點按右鍵，第一行數字就是
+   q     點圖釘／匯出路線時給 Google Maps 搜尋的字（可省略，預設用 name）
+   noRoute  true → 不放進 Google Maps 導航路線（例如纜車山頂站）
+   飯店還沒決定，所以沒有座標；訂好後在 Check-in 那行補上 pos 即可
+   ========================================================== */
+const itinerary = [
+  { day: 1, date: "2026-12-08", wd: "二", title: "抵達・仙台", hotel: "仙台大都會大飯店", mode: "driving", events: [
+    { t: "14:25",       name: "抵達仙台機場",         tag: "航班", note: "班機抵達", pos: [38.1397, 140.9170], q: "仙台空港" },
+    { t: "14:25–15:30", name: "入境、領行李",         tag: "其他" },
+    { t: "15:30–16:30", name: "仙台機場 → 仙台市區",   tag: "交通", note: "租車、冬季雪胎" },
+    { t: "16:30–17:30", name: "飯店 Check-in、休息",   tag: "住宿", pos: [38.2612, 140.8790], q: "Hotel Metropolitan Sendai, 1 Chome-1-1 Central, Aoba Ward, Sendai" },
+    { t: "17:30–19:00", name: "牛たん料理閣",         tag: "美食", note: "晚餐", pos: [38.2630, 140.8730], q: "牛たん料理 閣 仙台" },
+    { t: "19:00–21:00", name: "仙台站周邊逛街",       tag: "購物", pos: [38.2601, 140.8824], q: "仙台駅" }
+  ]},
+  { day: 2, date: "2026-12-09", wd: "三", title: "瑞鳳殿・松島", hotel: "仙台大都會大飯店", mode: "driving", events: [
+    { t: "08:00",       name: "起床、早餐",           tag: "其他" },
+    { t: "08:30–09:00", name: "仙台 → 瑞鳳殿",        tag: "交通" },
+    { t: "09:00–10:00", name: "瑞鳳殿",               tag: "景點", pos: [38.2472, 140.8983], q: "瑞鳳殿" },
+    { t: "10:00–11:00", name: "瑞鳳殿 → 松島",        tag: "交通" },
+    { t: "11:00–12:00", name: "瑞巖寺",               tag: "景點", pos: [38.3704, 141.0633], q: "瑞巌寺" },
+    { t: "12:00–13:00", name: "松島午餐",             tag: "美食" },
+    { t: "13:00–13:45", name: "円通院",               tag: "景點", pos: [38.3693, 141.0640], q: "円通院" },
+    { t: "13:45–14:15", name: "五大堂",               tag: "景點", pos: [38.3686, 141.0652], q: "五大堂 松島" },
+    { t: "14:15–15:30", name: "松島海岸",             tag: "景點", note: "散步、看景色", pos: [38.3667, 141.0602], q: "松島海岸駅" },
+    { t: "15:30–17:00", name: "宮城県松島離宮",       tag: "購物", note: "逛街、伴手禮", pos: [38.3672, 141.0614], q: "宮城県松島離宮" },
+    { t: "17:00–18:00", name: "松島自由活動",         tag: "其他" },
+    { t: "18:00–19:00", name: "松島晚餐",             tag: "美食" },
+    { t: "19:00–20:00", name: "松島 → 仙台",          tag: "交通" }
+  ]},
+  { day: 3, date: "2026-12-10", wd: "四", title: "山寺・山形・藏王溫泉", hotel: "蔵王温泉 岩清水料理の宿 季の里", mode: "driving", events: [
+    { t: "07:30",       name: "起床、早餐",           tag: "其他" },
+    { t: "08:00–08:30", name: "仙台 → 大崎八幡宮",    tag: "交通" },
+    { t: "08:30–09:15", name: "大崎八幡宮",           tag: "景點", pos: [38.2729, 140.8462], q: "大崎八幡宮" },
+    { t: "09:15–10:30", name: "大崎八幡宮 → 山寺",    tag: "交通" },
+    { t: "10:30–12:30", name: "山寺／立石寺",         tag: "景點", note: "登山參觀", pos: [38.3135, 140.4343], q: "立石寺" },
+    { t: "12:30–13:15", name: "山寺午餐",             tag: "美食" },
+    { t: "13:15–14:00", name: "山寺 → 山形市",        tag: "交通" },
+    { t: "14:00–15:00", name: "霞城公園／山形城跡",   tag: "景點", pos: [38.2562, 140.3282], q: "霞城公園" },
+    { t: "15:00–15:30", name: "最上義光歷史館",       tag: "景點", pos: [38.2586, 140.3325], q: "最上義光歴史館" },
+    { t: "15:30–16:30", name: "山形市 → 藏王溫泉",    tag: "交通", note: "冬季路況預留時間", warn: true },
+    { t: "16:30–17:00", name: "飯店 Check-in",        tag: "住宿", pos: [38.1450, 140.4400], q: "岩清水料理の宿 季の里 蔵王温泉" },
+    { t: "17:00–18:30", name: "泡溫泉、休息",         tag: "溫泉" },
+    { t: "18:30–20:00", name: "溫泉旅館晚餐",         tag: "美食" },
+    { t: "20:00–22:00", name: "溫泉／溫泉街散步",     tag: "溫泉" }
+  ]},
+  { day: 4, date: "2026-12-11", wd: "五", title: "藏王樹冰・狐狸村", hotel: "Hotel Premium Green Plus", mode: "driving", events: [
+    { t: "07:00",       name: "起床、早餐",           tag: "其他" },
+    { t: "07:40–08:00", name: "飯店 → 藏王纜車",      tag: "交通", note: "搭纜車，天候不佳可能停駛！停駛則改狐狸村～", warn: true, pos: [38.1470, 140.4430], q: "蔵王ロープウェイ 山麓駅" },
+    { t: "08:15–10:15", name: "藏王樹冰／地藏山頂站", tag: "景點", pos: [38.1330, 140.4330], q: "蔵王ロープウェイ 地蔵山頂駅", noRoute: true },
+    { t: "10:15–10:45", name: "下山、取車",           tag: "交通" },
+    { t: "10:45–12:00", name: "藏王 → 狐狸村",        tag: "交通", note: "實際時間視冬季路況", warn: true },
+    { t: "12:00–14:00", name: "宮城藏王狐狸村",       tag: "景點", note: "冬季最後入場約 15:30！", warn: true, pos: [38.0920, 140.5580], q: "宮城蔵王キツネ村" },
+    { t: "14:00–16:00", name: "狐狸村 → 仙台",        tag: "交通" },
+    { t: "16:00–17:00", name: "還車、前往飯店",       tag: "交通" },
+    { t: "17:00–18:30", name: "飯店休息",             tag: "住宿", pos: [38.2622, 140.8770], q: "Hotel Premium Green Plus, 2 Chome-6-8 Central, Aoba Ward, Sendai" },
+    { t: "18:30–20:00", name: "仙台晚餐",             tag: "美食" }
+  ]},
+  { day: 5, date: "2026-12-12", wd: "六", title: "朝市・返程", hotel: "今日退房 Check-out", mode: "transit",
+    tip: { label: "彈性", text: "可自行調配行程～" }, events: [
+    { t: "07:30",       name: "起床、早餐",           tag: "其他", note: "Check-out", pos: [38.2622, 140.8770], q: "Hotel Premium Green Plus, 2 Chome-6-8 Central, Aoba Ward, Sendai" },
+    { t: "08:30–09:00", name: "前往仙台朝市",         tag: "交通" },
+    { t: "09:00–10:00", name: "仙台朝市",             tag: "美食", note: "早餐、採買", pos: [38.2605, 140.8785], q: "仙台朝市" },
+    { t: "10:00–12:00", name: "仙台站周邊購物",       tag: "購物", note: "伴手禮", pos: [38.2601, 140.8824], q: "仙台駅" },
+    { t: "12:00–13:00", name: "最後午餐",             tag: "美食" },
+    { t: "13:00",       name: "仙台 → 仙台機場",      tag: "交通", note: "電車／地鐵…" },
+    { t: "約 14:00",    name: "抵達仙台機場",         tag: "交通", note: "報到、退稅、最後採買", pos: [38.1397, 140.9170], q: "仙台空港" },
+    { t: "16:15",       name: "仙台 → 台灣",          tag: "航班", note: "回程" }
+  ]}
+];
+
+/* 倒數計時用：出發日（台灣時間 12/8 00:00）與旅程結束 */
+const TRIP = { start: "2026-12-08T00:00:00+08:00", end: "2026-12-12T23:59:59+09:00" };
+
+/* ==========================================================
+   ② 以下是程式，一般不用改
+   ========================================================== */
+const $ = (s, el = document) => el.querySelector(s);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const ZH = ["", "一", "二", "三", "四", "五", "六", "七", "八", "九", "十"];
+const store = {
+  get(k) { try { return localStorage.getItem(k); } catch (_) { return null; } },
+  set(k, v) { try { localStorage.setItem(k, v); } catch (_) {} }
+};
+
+/* --- 倒數計時 --- */
+function tick() {
+  const now = Date.now(), s = Date.parse(TRIP.start), e = Date.parse(TRIP.end), el = $("#count");
+  if (now < s) {
+    const diff = s - now;
+    const d = Math.floor(diff / 864e5), h = Math.floor(diff % 864e5 / 36e5), m = Math.floor(diff % 36e5 / 6e4);
+    el.innerHTML = `距離出發 <b>${d}</b> 天 <b>${h}</b> 時 <b>${m}</b> 分`;
+  } else if (now <= e) {
+    el.textContent = "旅行進行中，玩得開心";
+  } else {
+    el.textContent = "旅程結束，歡迎回家";
+  }
+}
+tick(); setInterval(tick, 30000);
+
+/* --- 日別頁籤與時間軸 --- */
+function todayIndex() {
+  try {
+    const t = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Tokyo" }).format(new Date());
+    const i = itinerary.findIndex(d => d.date === t);
+    return i >= 0 ? i : 0;
+  } catch (_) { return 0; }
+}
+let cur = todayIndex();
+
+const md = d => { const [, m, dd] = d.date.split("-").map(Number); return { m, d: dd }; };
+const pins = d => d.events.filter(e => e.pos);
+const timeHtml = t => { const p = t.split(/[–—]/); return p.length === 2 ? `${esc(p[0])}<span class="end">${esc(p[1])}</span>` : esc(t); };
+const noteHtml = e => !e.note ? "" :
+  `<p class="note${e.warn ? " warn" : ""}">${e.warn ? "<b>注意</b>" : ""}${esc(e.note).replace(/\n/g, "<br>")}</p>`;
+
+function renderTabs() {
+  $("#tabs").innerHTML = itinerary.map((d, i) => {
+    const { m, d: dd } = md(d);
+    return `<button class="tab" type="button" role="tab" id="tab-${i}" data-i="${i}" aria-selected="${i === cur}" aria-controls="panel" tabindex="${i === cur ? 0 : -1}">
+      <span class="d">DAY ${d.day}</span><span class="date">${m}/${dd}</span><span class="wd">（${esc(d.wd)}）</span></button>`;
+  }).join("");
+}
+
+function renderPanel() {
+  const d = itinerary[cur], { m, d: dd } = md(d);
+  let n = 0;
+  const hasMap = pins(d).length > 0;
+  const rows = d.events.map(e => {
+    const num = e.pos ? ++n : 0;
+    const cls = ["ev", e.tag === "交通" ? "move" : "", e.pos ? "has-pin" : ""].join(" ").trim();
+    return `<li class="${cls}">
+      <div class="time">${timeHtml(e.t)}</div>
+      <div class="rail">${num ? `<span class="pin-n" aria-label="地圖 ${num} 號">${num}</span>` : ""}</div>
+      <div class="body">
+        <div><span class="name">${esc(e.name)}</span><span class="tag t-${esc(e.tag)}">${esc(e.tag)}</span>${e.must ? '<span class="tag t-must" style="background:var(--shu);color:#fff;border-color:var(--shu)">必訪</span>' : ""}</div>
+        ${noteHtml(e)}
+      </div></li>`;
+  }).join("");
+
+  const panel = $("#panel");
+  panel.setAttribute("aria-labelledby", "tab-" + cur);
+  panel.innerHTML = `
+    <div class="day-head">
+      <div>
+        <p class="kicker">第${ZH[d.day]}日 ・ ${m}月${dd}日（${esc(d.wd)}）</p>
+        <h3>${esc(d.title)}</h3>
+        <p class="stay-line"><span class="tag t-住宿">宿</span>${esc(d.hotel)}</p>
+      </div>
+      ${hasMap ? `<button class="btn" type="button" data-map="${cur}">路線預覽<small>地図</small></button>` : ""}
+    </div>
+    ${d.tip ? `<p class="tip"><b>${esc(d.tip.label)}</b>${esc(d.tip.text)}</p>` : ""}
+    <ol class="timeline">${rows}</ol>`;
+}
+
+function select(i, focus) {
+  cur = i; renderTabs(); renderPanel();
+  if (focus) $("#tab-" + i).focus();
+}
+
+$("#tabs").addEventListener("click", ev => {
+  const b = ev.target.closest(".tab"); if (b) select(+b.dataset.i);
+});
+$("#tabs").addEventListener("keydown", ev => {
+  const last = itinerary.length - 1;
+  const next = { ArrowRight: Math.min(cur + 1, last), ArrowLeft: Math.max(cur - 1, 0), Home: 0, End: last }[ev.key];
+  if (next !== undefined) { ev.preventDefault(); select(next, true); }
+});
+$("#panel").addEventListener("click", ev => {
+  const b = ev.target.closest("[data-map]"); if (b) openMap(+b.dataset.map);
+});
+
+renderTabs(); renderPanel();
+
+/* --- Google Maps 連結 --- */
+const qOf = e => e.q || e.name;
+const searchUrl = e => "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(qOf(e));
+function routeUrl(d) {
+  const p = pins(d).filter(e => !e.noRoute);
+  if (p.length === 0) return "#";
+  if (p.length === 1) return searchUrl(p[0]);
+  let u = "https://www.google.com/maps/dir/?api=1&travelmode=" + (d.mode || "driving") +
+          "&origin=" + encodeURIComponent(qOf(p[0])) +
+          "&destination=" + encodeURIComponent(qOf(p[p.length - 1]));
+  const mid = p.slice(1, -1).map(qOf);
+  if (mid.length) u += "&waypoints=" + encodeURIComponent(mid.join("|"));
+  return u;
+}
+
+/* --- 地圖 --- */
+let map = null, layer = null, base = {}, baseKey = null, markers = [], lastFocus = null;
+
+function setBase(key) {
+  if (!map || !base[key]) return;
+  if (baseKey && base[baseKey]) map.removeLayer(base[baseKey]);
+  base[key].addTo(map); baseKey = key;
+  document.querySelectorAll("[data-base]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.base === key)));
+  store.set("sendai2026:base", key);
+}
+
+function initMap() {
+  map = L.map("map");
+  base.pale = L.tileLayer("https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png", {
+    maxZoom: 18,
+    attribution: '<a href="https://maps.gsi.go.jp/development/ichiran.html" target="_blank" rel="noopener">地理院タイル</a>'
+  });
+  const gsiAttr = '<a href="https://maps.gsi.go.jp/development/ichiran.html" target="_blank" rel="noopener">地理院タイル</a>';
+  base.std = L.tileLayer("https://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png", { maxZoom: 18, attribution: gsiAttr });
+  base.esri = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}", {
+    maxZoom: 18, attribution: "Tiles &copy; Esri"
+  });
+  // 地理院圖磚連續載入失敗時，自動換成備用地圖（Esri）
+  let errs = 0;
+  ["pale", "std"].forEach(k => base[k].on("tileerror", () => { if (++errs === 6 && baseKey !== "esri") setBase("esri"); }));
+  layer = L.layerGroup().addTo(map);
+  const saved = store.get("sendai2026:base");
+  setBase(saved === "std" ? "std" : "pale");
+}
+
+function openMap(i) {
+  const d = itinerary[i], p = pins(d);
+  lastFocus = document.activeElement;
+  $("#modal-title").textContent = `第${ZH[d.day]}日 路線預覽`;
+  $("#gmaps").href = routeUrl(d);
+  $("#modal").classList.add("open");
+  document.body.style.overflow = "hidden";
+  $("#modal-close").focus();
+
+  if (typeof L === "undefined") {
+    $("#map").innerHTML = '<p class="map-error">地圖元件載入失敗，請確認網路後重新整理。你仍可用右上方按鈕在 Google Maps 開啟路線。</p>';
+    $("#chips").innerHTML = "";
+    return;
+  }
+  if (!map) initMap();
+  layer.clearLayers(); markers = [];
+
+  // 視窗剛顯示時尺寸還沒算好，要等一下再 invalidateSize
+  setTimeout(() => {
+    map.invalidateSize();
+    const coords = p.map(e => e.pos);
+    if (coords.length > 1) L.polyline(coords, { color: "#2B3A55", weight: 3, opacity: .8, dashArray: "6 8" }).addTo(layer);
+    p.forEach((e, k) => {
+      const icon = L.divIcon({ className: "pin-wrap", html: `<div class="pin">${k + 1}</div>`, iconSize: [30, 30], iconAnchor: [15, 15] });
+      const m = L.marker(e.pos, { icon, title: e.name, keyboard: true })
+        .bindTooltip(e.name, { direction: "top", offset: [0, -14] })
+        .bindPopup(`<div class="pop"><b>${esc(e.name)}</b><br>${esc(e.t)}<br><a href="${searchUrl(e)}" target="_blank" rel="noopener">在 Google Maps 查看</a></div>`)
+        .addTo(layer);
+      markers.push(m);
+    });
+    if (coords.length === 1) map.setView(coords[0], 15);
+    else map.fitBounds(coords, { padding: [40, 40], maxZoom: 15 });
+  }, 60);
+
+  $("#chips").innerHTML = p.map((e, k) => `<button class="chip" type="button" data-k="${k}"><b>${k + 1}</b>${esc(e.name)}</button>`).join("");
+}
+
+function closeMap() {
+  $("#modal").classList.remove("open");
+  document.body.style.overflow = "";
+  if (lastFocus && lastFocus.focus) lastFocus.focus();
+}
+
+$("#modal-close").addEventListener("click", closeMap);
+$("#modal").addEventListener("click", ev => { if (ev.target.id === "modal") closeMap(); });
+$("#chips").addEventListener("click", ev => {
+  const c = ev.target.closest(".chip"); if (!c || !map) return;
+  const m = markers[+c.dataset.k]; if (!m) return;
+  map.flyTo(m.getLatLng(), Math.max(map.getZoom(), 14), { duration: .6 });
+  m.openTooltip();
+});
+document.querySelectorAll("[data-base]").forEach(b => b.addEventListener("click", () => setBase(b.dataset.base)));
+document.addEventListener("keydown", ev => {
+  const open = $("#modal").classList.contains("open");
+  if (!open) return;
+  if (ev.key === "Escape") { closeMap(); return; }
+  if (ev.key === "Tab") {   // 簡易 focus trap
+    const f = [...$("#modal .sheet").querySelectorAll("button, a[href], [tabindex]:not([tabindex='-1'])")].filter(x => !x.disabled && x.offsetParent !== null);
+    if (!f.length) return;
+    const first = f[0], last = f[f.length - 1];
+    if (ev.shiftKey && document.activeElement === first) { ev.preventDefault(); last.focus(); }
+    else if (!ev.shiftKey && document.activeElement === last) { ev.preventDefault(); first.focus(); }
+  }
+});
+
+/* --- 待辦清單：勾選狀態存在這支瀏覽器 --- */
+document.querySelectorAll("#todo input").forEach((box, i) => {
+  const key = "sendai2026:todo:" + i;
+  box.checked = store.get(key) === "1";
+  box.addEventListener("change", () => store.set(key, box.checked ? "1" : "0"));
+});
+</script>
+</body>
+</html>
