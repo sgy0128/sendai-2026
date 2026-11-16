@@ -321,6 +321,12 @@
   .sheet-head h3 { font-family: var(--mincho); font-size: 1.3rem; color: var(--ai); }
   .tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 10px; }
   .tools .grow { flex: 1; }
+  .layers { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .layers[hidden], .layer-opts[hidden] { display: none; }
+  .layer-toggle { width: 44px; padding: 0 !important; display: inline-flex; align-items: center; justify-content: center; }
+  .layer-toggle[aria-expanded="true"] { background: var(--ai); color: var(--washi); }
+  .layer-opts { display: flex; gap: 8px; flex-wrap: wrap; animation: lay-in .18s ease-out; }
+  @keyframes lay-in { from { opacity: 0; transform: translateX(-6px); } to { opacity: 1; transform: none; } }
   .tools .btn { min-height: 40px; padding: 4px 14px; font-size: .88rem; }
   #map { flex: 1; min-height: 220px; margin-top: 10px; border: 1px solid var(--sumi); background: #E8E4D8; }
   .chips { display: flex; gap: 8px; overflow-x: auto; padding: 10px 0 4px; }
@@ -639,9 +645,16 @@ footer .band-bg{display:none}footer span{background:none}
       <button class="btn ghost" id="modal-close" type="button">關閉</button>
     </div>
     <div class="tools">
-      <button class="btn ghost" type="button" data-base="pale" aria-pressed="true">淡色地圖</button>
-      <button class="btn ghost" type="button" data-base="color" aria-pressed="false">彩色地圖</button>
-      <button class="btn ghost" type="button" data-base="std" aria-pressed="false">標準地圖</button>
+      <div class="layers" id="layers">
+        <button class="btn ghost layer-toggle" id="layer-toggle" type="button" aria-expanded="false" aria-controls="layer-opts" aria-label="切換地圖樣式" title="切換地圖樣式">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M12 3 3 8l9 5 9-5-9-5z"/><path d="m3 12.5 9 5 9-5"/><path d="m3 17 9 5 9-5"/></svg>
+        </button>
+        <div class="layer-opts" id="layer-opts" hidden>
+          <button class="btn ghost" type="button" data-base="color" aria-pressed="true">彩色地圖</button>
+          <button class="btn ghost" type="button" data-base="std" aria-pressed="false">標準地圖</button>
+          <button class="btn ghost" type="button" data-base="pale" aria-pressed="false">淡色地圖</button>
+        </div>
+      </div>
       <span class="grow"></span>
       <a class="btn shu" id="gmaps" target="_blank" rel="noopener">在 Google Maps 開啟當日路線</a>
     </div>
@@ -897,7 +910,7 @@ function drawRoute() {
 function setBase(key) {
   if (!map || !STYLES[key]) return;
   document.querySelectorAll("[data-base]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.base === key)));
-  store.set("sendai2026:base", key);
+  store.set("sendai2026:base2", key);
   if (baseKey === key) return;
   baseKey = key;
   map.setStyle(STYLES[key]);
@@ -905,8 +918,8 @@ function setBase(key) {
 }
 
 function initMap() {
-  const saved = store.get("sendai2026:base");
-  baseKey = (saved === "std" || saved === "color") ? saved : "pale";
+  const saved = store.get("sendai2026:base2");
+  baseKey = (saved === "std" || saved === "pale" || saved === "color") ? saved : "color";
   map = new maplibregl.Map({
     container: "map", style: STYLES[baseKey], center: [140.87, 38.26], zoom: 10,
     attributionControl: { compact: true }, pixelRatio: Math.max(window.devicePixelRatio || 1, 2) > 3 ? 3 : Math.max(window.devicePixelRatio || 1, 2)
@@ -1007,7 +1020,14 @@ $("#chips").addEventListener("click", ev => {
   map.flyTo({ center: m.getLngLat(), zoom: Math.max(map.getZoom(), 14), duration: 600 });
   const pp = m.getPopup(); if (pp && !pp.isOpen()) m.togglePopup();
 });
-document.querySelectorAll("[data-base]").forEach(b => b.addEventListener("click", () => setBase(b.dataset.base)));
+function toggleLayers(open) {
+  const t = $("#layer-toggle"), o = $("#layer-opts");
+  const v = open === undefined ? o.hidden : open;
+  o.hidden = !v; t.setAttribute("aria-expanded", String(v));
+}
+$("#layer-toggle").addEventListener("click", () => toggleLayers());
+document.querySelectorAll("[data-base]").forEach(b => b.addEventListener("click", () => { setBase(b.dataset.base); toggleLayers(false); }));
+document.addEventListener("click", ev => { if (!ev.target.closest("#layers")) toggleLayers(false); });
 document.addEventListener("keydown", ev => {
   const open = $("#modal").classList.contains("open");
   if (!open) return;
