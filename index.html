@@ -198,6 +198,39 @@
   .stay .name { font-family: var(--mincho); font-weight: 700; font-size: 1.2rem; margin: 2px 0; }
   .stay .meta { font-size: .88rem; }
   .addr { font-size: .78rem; line-height: 1.5; margin-top: 2px; }
+
+  .grid.tickets { grid-template-columns: 1fr; gap:18px; }
+  .ticket { overflow:hidden; }
+  .ticket .main { padding:0; display:flex; flex-direction:column; }
+  .tk-head { display:flex; justify-content:space-between; align-items:center; gap:10px; padding:9px 20px;
+    background:linear-gradient(90deg,#1F5B4A,#2C7A63); color:#fff; font-size:.82rem; letter-spacing:.06em; }
+  .tk-head b { font-family:var(--mincho); letter-spacing:.1em; font-size:.95rem; }
+  .tk-head span { opacity:.9; }
+  .tk-body { padding:14px 20px 16px; }
+  .codes { display:flex; align-items:center; gap:10px; }
+  .code { display:flex; flex-direction:column; min-width:0; }
+  .code b { font-family:var(--mincho); font-size:2.4rem; line-height:1; letter-spacing:.04em; }
+  .code span { font-size:.88rem; margin-top:4px; }
+  .code.r { text-align:right; }
+  .fly { flex:1; display:flex; align-items:center; gap:6px; color:var(--shu); min-width:50px; }
+  .fly i { flex:1; border-top:2px dotted currentColor; opacity:.55; }
+  .fly svg { width:26px; height:26px; flex:none; }
+  .fields { display:grid; grid-template-columns:repeat(4,1fr); gap:10px 12px; margin-top:14px; padding-top:12px; border-top:1px dashed rgba(31,27,22,.3); }
+  .fields div { display:flex; flex-direction:column; min-width:0; }
+  .fields small { font-size:.68rem; letter-spacing:.12em; opacity:.6; }
+  .fields strong { font-size:1rem; font-weight:700; margin-top:2px; }
+  .ticket .stub { writing-mode:horizontal-tb; letter-spacing:0; flex-direction:column; gap:10px; width:96px; color:inherit; }
+  .stub .fn { text-align:center; font-family:var(--mincho); font-size:1.05rem; color:var(--shu); line-height:1.2; }
+  .stub .fn small { display:block; font-size:.62rem; letter-spacing:.14em; opacity:.7; color:inherit; font-family:inherit; }
+  .stub .bar { width:60px; height:46px; opacity:.8;
+    background:repeating-linear-gradient(90deg,#1F1B16 0 2px,transparent 2px 4px,#1F1B16 4px 5px,transparent 5px 8px,#1F1B16 8px 11px,transparent 11px 12px,#1F1B16 12px 13px,transparent 13px 16px); }
+  @media (max-width:560px){
+    .code b{font-size:1.8rem} .code span{font-size:.76rem}
+    .tk-head{padding:8px 14px} .tk-body{padding:12px 14px 14px}
+    .fields{grid-template-columns:repeat(2,1fr)}
+    .ticket{padding:0 !important} .ticket .stub{width:76px !important} .stub .bar{width:44px;height:38px}
+    .tk-head{font-size:.72rem;letter-spacing:.02em;white-space:nowrap} .tk-head b{font-size:.82rem;letter-spacing:.04em}
+  }
   .fill { border-bottom: 1px dashed var(--sumi-2); }
 
   /* ---------- 日別頁籤 ---------- */
@@ -481,26 +514,58 @@ footer .band-bg{display:none}footer span{background:none}
     <h2 class="sec-h" id="h-info"><span class="num">壹</span>旅の基本<small>基本資訊</small></h2>
 
     <!-- 想改航班、飯店：直接改下面的文字就好 -->
-    <div class="grid two">
+    <div class="grid tickets">
       <article class="card ticket">
         <div class="main">
-          <p class="kicker">往路 ・ 12/8（二）</p>
-          <p class="route">台灣<span class="arrow">→</span>仙台</p>
-          <p class="meta">14:25 抵達仙台空港</p>
-          <p class="meta dim">航班：<span class="fill">（填入航班編號）</span></p>
+          <div class="tk-head"><b>EVA AIR 長榮航空</b><span>往路 ・ 12/8（二）</span></div>
+          <div class="tk-body">
+            <div class="codes">
+              <div class="code"><b>TPE</b><span>桃園 ・ 第 2 航廈</span></div>
+              <div class="fly"><i></i><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z" transform="rotate(90 12 12)"/></svg><i></i></div>
+              <div class="code r"><b>SDJ</b><span>仙台</span></div>
+            </div>
+            <div class="fields">
+              <div><small>起飛 DEP</small><strong>10:15</strong></div>
+              <div><small>抵達 ARR</small><strong>14:25</strong></div>
+              <div><small>飛行 TIME</small><strong>3 小時 10 分</strong></div>
+              <div><small>託運 BAG</small><strong>1 件</strong></div>
+            </div>
+          </div>
         </div>
-        <div class="stub" aria-hidden="true">往路</div>
+        <div class="stub" aria-hidden="true"><div class="fn"><small>FLIGHT</small>BR118</div><div class="bar"></div></div>
       </article>
       <article class="card ticket">
         <div class="main">
-          <p class="kicker">復路 ・ 12/12（六）</p>
-          <p class="route">仙台<span class="arrow">→</span>台灣</p>
-          <p class="meta">16:15 仙台起飛</p>
-          <p class="meta dim">航班：<span class="fill">（填入航班編號）</span></p>
+          <div class="tk-head"><b>EVA AIR 長榮航空</b><span>復路 ・ 12/12（六）</span></div>
+          <div class="tk-body">
+            <div class="codes">
+              <div class="code"><b>SDJ</b><span>仙台</span></div>
+              <div class="fly"><i></i><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z" transform="rotate(90 12 12)"/></svg><i></i></div>
+              <div class="code r"><b>TPE</b><span>桃園 ・ 第 2 航廈</span></div>
+            </div>
+            <div class="fields">
+              <div><small>起飛 DEP</small><strong>16:15</strong></div>
+              <div><small>抵達 ARR</small><strong>19:30</strong></div>
+              <div><small>飛行 TIME</small><strong>4 小時 15 分</strong></div>
+              <div><small>託運 BAG</small><strong>2 件</strong></div>
+            </div>
+          </div>
         </div>
-        <div class="stub" aria-hidden="true">復路</div>
+        <div class="stub" aria-hidden="true"><div class="fn"><small>FLIGHT</small>BR117</div><div class="bar"></div></div>
       </article>
     </div>
+  </section>
+
+  <!-- ============ 貳 每日行程 ============ -->
+  <section aria-labelledby="h-days">
+    <h2 class="sec-h" id="h-days"><span class="num">貳</span>日々の行程<small>每日行程</small></h2>
+    <div class="tabs" role="tablist" aria-label="選擇日期" id="tabs"></div>
+    <div id="panel" class="card panel" role="tabpanel" tabindex="0"></div>
+  </section>
+
+  <!-- ============ 參 住宿・租車 ============ -->
+  <section aria-labelledby="h-stay">
+    <h2 class="sec-h" id="h-stay"><span class="num">參</span>宿と車<small>住宿・租車</small></h2>
 
     <div class="grid four">
       <article class="card stay">
@@ -528,16 +593,9 @@ footer .band-bg{display:none}footer span{background:none}
     </div>
   </section>
 
-  <!-- ============ 貳 每日行程 ============ -->
-  <section aria-labelledby="h-days">
-    <h2 class="sec-h" id="h-days"><span class="num">貳</span>日々の行程<small>每日行程</small></h2>
-    <div class="tabs" role="tablist" aria-label="選擇日期" id="tabs"></div>
-    <div id="panel" class="card panel" role="tabpanel" tabindex="0"></div>
-  </section>
-
-  <!-- ============ 參 行前準備 ============ -->
+  <!-- ============ 肆 行前準備 ============ -->
   <section aria-labelledby="h-prep">
-    <h2 class="sec-h" id="h-prep"><span class="num">參</span>旅の支度<small>行前準備</small></h2>
+    <h2 class="sec-h" id="h-prep"><span class="num">肆</span>旅の支度<small>行前準備</small></h2>
     <div class="grid prep">
       <div class="card">
         <h3>行前待辦</h3>
@@ -609,7 +667,8 @@ footer .band-bg{display:none}footer span{background:none}
    ========================================================== */
 const itinerary = [
   { day: 1, date: "2026-12-08", wd: "二", title: "抵達・仙台", hotel: "仙台大都會大飯店", mode: "driving", events: [
-    { t: "14:25",       name: "抵達仙台機場",         tag: "航班", note: "班機抵達", pos: [38.1397, 140.9170], q: "仙台空港" },
+    { t: "10:15",       name: "桃園 T2 起飛",          tag: "航班", note: "長榮 BR118" },
+    { t: "14:25",       name: "抵達仙台機場",         tag: "航班", note: "BR118 抵達", pos: [38.1397, 140.9170], q: "仙台空港" },
     { t: "14:25–15:30", name: "入境、領行李",         tag: "其他" },
     { t: "15:30–16:30", name: "仙台機場 → 仙台市區",   tag: "交通", note: "租車、冬季雪胎" },
     { t: "16:30–17:30", name: "飯店 Check-in、休息",   tag: "住宿", pos: [38.2612, 140.8790], q: "Hotel Metropolitan Sendai, 1 Chome-1-1 Central, Aoba Ward, Sendai" },
@@ -668,12 +727,13 @@ const itinerary = [
     { t: "12:00–13:00", name: "最後午餐",             tag: "美食" },
     { t: "13:00",       name: "仙台 → 仙台機場",      tag: "交通", note: "電車／地鐵…" },
     { t: "約 14:00",    name: "抵達仙台機場",         tag: "交通", note: "報到、退稅、最後採買", pos: [38.1397, 140.9170], q: "仙台空港" },
-    { t: "16:15",       name: "仙台 → 台灣",          tag: "航班", note: "回程" }
+    { t: "16:15",       name: "仙台 → 桃園",          tag: "航班", note: "長榮 BR117 起飛" },
+    { t: "19:30",       name: "抵達桃園機場 T2",       tag: "航班", note: "BR117 抵達" }
   ]}
 ];
 
 /* 倒數計時用：出發日（台灣時間 12/8 00:00）與旅程結束 */
-const TRIP = { start: "2026-12-08T00:00:00+08:00", end: "2026-12-12T23:59:59+09:00" };
+const TRIP = { start: "2026-12-08T10:15:00+08:00", end: "2026-12-12T19:30:00+08:00" };
 
 /* ==========================================================
    ② 以下是程式，一般不用改
