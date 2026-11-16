@@ -588,7 +588,8 @@ footer .band-bg{display:none}footer span{background:none}
       <article class="card stay">
         <p class="kicker">租車 ・ 12/8 – 12/11</p>
         <p class="name">冬季雪胎</p>
-        <p class="meta dim">12/8 取車 → 12/11 仙台還車</p>
+        <p class="meta">取車　12/8 15:30 ・ 仙台機場</p>
+        <p class="meta">還車　12/11 16:00 ・ 仙台</p>
       </article>
     </div>
   </section>
@@ -639,6 +640,7 @@ footer .band-bg{display:none}footer span{background:none}
     </div>
     <div class="tools">
       <button class="btn ghost" type="button" data-base="pale" aria-pressed="true">淡色地圖</button>
+      <button class="btn ghost" type="button" data-base="color" aria-pressed="false">彩色地圖</button>
       <button class="btn ghost" type="button" data-base="std" aria-pressed="false">標準地圖</button>
       <span class="grow"></span>
       <a class="btn shu" id="gmaps" target="_blank" rel="noopener">在 Google Maps 開啟當日路線</a>
@@ -670,7 +672,7 @@ const itinerary = [
     { t: "10:15",       name: "桃園 T2 起飛",          tag: "航班", note: "長榮 BR118" },
     { t: "14:25",       name: "抵達仙台機場",         tag: "航班", note: "BR118 抵達", pos: [38.1397, 140.9170], q: "仙台空港" },
     { t: "14:25–15:30", name: "入境、領行李",         tag: "其他" },
-    { t: "15:30–16:30", name: "仙台機場 → 仙台市區",   tag: "交通", note: "租車、冬季雪胎" },
+    { t: "15:30–16:30", name: "仙台機場取車 → 仙台市區", tag: "交通", note: "15:30 取車（冬季雪胎）" },
     { t: "16:30–17:30", name: "飯店 Check-in、休息",   tag: "住宿", pos: [38.2612, 140.8790], q: "Hotel Metropolitan Sendai, 1 Chome-1-1 Central, Aoba Ward, Sendai" },
     { t: "17:30–19:00", name: "牛たん料理閣",         tag: "美食", note: "晚餐", pos: [38.2630, 140.8730], q: "牛たん料理 閣 仙台" },
     { t: "19:00–21:00", name: "仙台站周邊逛街",       tag: "購物", pos: [38.2601, 140.8824], q: "仙台駅" }
@@ -714,7 +716,7 @@ const itinerary = [
     { t: "10:45–12:00", name: "藏王 → 狐狸村",        tag: "交通", note: "實際時間視冬季路況", warn: true },
     { t: "12:00–14:00", name: "宮城藏王狐狸村",       tag: "景點", note: "冬季最後入場約 15:30！", warn: true, pos: [38.0920, 140.5580], q: "宮城蔵王キツネ村" },
     { t: "14:00–16:00", name: "狐狸村 → 仙台",        tag: "交通" },
-    { t: "16:00–17:00", name: "還車、前往飯店",       tag: "交通" },
+    { t: "16:00–17:00", name: "還車、前往飯店",       tag: "交通", note: "16:00 還車" },
     { t: "17:00–18:30", name: "飯店休息",             tag: "住宿", pos: [38.2622, 140.8770], q: "Hotel Premium Green Plus, 2 Chome-6-8 Central, Aoba Ward, Sendai" },
     { t: "18:30–20:00", name: "仙台晚餐",             tag: "美食" }
   ]},
@@ -852,11 +854,19 @@ function routeUrl(d) {
 
 /* --- 地圖 --- */
 let map = null, base = {}, baseKey = null, markers = [], lastFocus = null, routeData = null, routeToken = 0;
+const ESRI_STREET = {
+  version: 8,
+  sources: { esri: { type: "raster", tileSize: 256, maxzoom: 19,
+    tiles: ["https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}"],
+    attribution: "Tiles © Esri" } },
+  layers: [{ id: "esri", type: "raster", source: "esri" }]
+};
 const STYLES = {
+  color: ESRI_STREET,
   pale: "https://tiles.openfreemap.org/styles/positron",
   std:  "https://tiles.openfreemap.org/styles/liberty"
 };
-const LEGAL_BASE = "圖釘位置為概略位置。點圖釘可在 Google Maps 查確切位置，要導航請用右上方按鈕。地圖 © OpenFreeMap、OpenStreetMap contributors";
+const LEGAL_BASE = "圖釘位置為概略位置。點圖釘可在 Google Maps 查確切位置，要導航請用右上方按鈕。地圖 © OpenFreeMap、OpenStreetMap contributors、Esri（彩色地圖）";
 
 function setLegal(kind) {
   const el = $("#legal"); if (!el) return;
@@ -896,7 +906,7 @@ function setBase(key) {
 
 function initMap() {
   const saved = store.get("sendai2026:base");
-  baseKey = saved === "std" ? "std" : "pale";
+  baseKey = (saved === "std" || saved === "color") ? saved : "pale";
   map = new maplibregl.Map({
     container: "map", style: STYLES[baseKey], center: [140.87, 38.26], zoom: 10,
     attributionControl: { compact: true }, pixelRatio: Math.max(window.devicePixelRatio || 1, 2) > 3 ? 3 : Math.max(window.devicePixelRatio || 1, 2)
