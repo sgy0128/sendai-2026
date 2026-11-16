@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light">
 <meta name="theme-color" content="#2B3A55">
-<title>仙台冬の旅 2026</title>
+<title>仙台 杜の都 冬の旅 2026</title>
 
 <!-- 字型：明朝體（Noto Serif TC / Shippori Mincho） -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -318,6 +318,67 @@
     .snow { animation: none; }
     .btn, .todo input::after { transition: none; }
   }
+
+  /* ---------- 柔化：圓角・淡影・柔和線條 ---------- */
+  :root { --r: 18px; --edge: rgba(31,27,22,.30); --soft: 0 8px 22px rgba(43,58,85,.10); }
+
+  /* 卡片：圓角、淡淡的影子，內框線變淡 */
+  .card { border-radius: var(--r); border: 1px solid var(--edge); outline: 1px solid rgba(31,27,22,.12); outline-offset: -6px; box-shadow: var(--soft); }
+  .ticket { border-radius: 20px; }
+  .ticket .stub { border-left-color: rgba(31,27,22,.35); }
+  .ticket .stub::before, .ticket .stub::after { border-color: rgba(31,27,22,.30); }
+
+  /* 按鈕、標籤：膠囊形 */
+  .btn { border-radius: 999px; box-shadow: 0 4px 12px rgba(43,58,85,.22); }
+  .btn:active { transform: translateY(1px); box-shadow: 0 2px 6px rgba(43,58,85,.2); }
+  .btn.ghost { box-shadow: none; border-color: rgba(43,58,85,.55); }
+  .tag { border-radius: 999px; padding: 0 9px; background: rgba(255,255,255,.5); border-color: rgba(31,27,22,.25);
+         background: color-mix(in srgb, currentColor 9%, transparent); border-color: color-mix(in srgb, currentColor 45%, transparent); }
+  .tag.t-航班 { background: var(--ai); color: var(--washi); border-color: var(--ai); }
+
+  /* 標題 */
+  .sec-h .num { border-radius: 8px; }
+  .sec-h::after { border-radius: 3px; }
+  .hanko { border-radius: 9px; }
+
+  /* 日期頁籤 */
+  .tabs { gap: 10px; padding: 6px 4px 14px; }
+  .tab { border-radius: 18px; padding-top: 15px; border: 1px solid var(--edge); box-shadow: 0 3px 10px rgba(43,58,85,.08); transition: background .15s, box-shadow .15s; }
+  .tab[aria-selected="true"] { box-shadow: 0 8px 18px rgba(43,58,85,.28); }
+  .tab[aria-selected="true"]::before { left: 50%; right: auto; top: 6px; width: 22px; height: 3px; margin-left: -11px; border-radius: 3px; background: #E8C170; }
+
+  /* 每日行程：每個行程變成柔和的小卡，連線與圓點也變輕 */
+  .day-head { border-bottom-color: rgba(31,27,22,.25); }
+  .tip { border-left: 0; border-radius: 14px; padding: 10px 16px; background: rgba(143,163,196,.2); }
+  .timeline { margin-top: 20px; }
+  .ev .time { padding-top: 12px; }
+  .ev .rail::before { border-left-color: rgba(31,27,22,.28); }
+  .ev:first-child .rail::before { top: 20px; }
+  .ev:last-child .rail::before { height: 20px; }
+  .ev .rail::after { top: 14px; border-color: rgba(31,27,22,.5); }
+  .pin-n { top: 9px; box-shadow: 0 0 0 3px var(--paper), 0 2px 6px rgba(184,50,42,.35); }
+  .ev .body { padding: 10px 14px; margin-bottom: 8px; border-radius: 16px; background: rgba(244,239,227,.6); }
+  .ev.move .body { padding: 3px 14px; margin-bottom: 2px; background: transparent; }
+  .ev.move .time { padding-top: 4px; }
+  .ev.move .rail::before { border-left-color: rgba(31,27,22,.30); }
+  .ev.move .rail::after { top: 6px; }
+  .ev.move .pin-n { top: 1px; }
+  .ev .note.warn { border-left: 0; border-radius: 10px; padding: 5px 12px; }
+
+  /* 行前準備 */
+  .todo input { border-radius: 8px; border-color: rgba(31,27,22,.55); }
+  .tips .day { border-radius: 999px; padding: 0 10px; }
+
+  /* 首頁下緣與頁尾：圓角收邊 */
+  .band { border-radius: 0 0 30px 30px; overflow: hidden; }
+  .plate { border-radius: 18px; border-color: rgba(244,239,227,.8); outline-color: rgba(244,239,227,.45); }
+  footer { border-radius: 30px 30px 0 0; }
+
+  /* 地圖視窗 */
+  .sheet { border-radius: 24px; border: 1px solid var(--edge); outline: 1px solid rgba(31,27,22,.12); outline-offset: -6px; box-shadow: 0 20px 50px rgba(31,27,22,.35); }
+  #map { border-radius: 16px; border: 1px solid var(--edge); overflow: hidden; }
+  .chip { border-radius: 999px; border-color: var(--edge); }
+  .leaflet-tooltip, .leaflet-popup-content-wrapper { border-radius: 12px; border-color: var(--edge); }
 </style>
 </head>
 <body>
@@ -325,7 +386,8 @@
 <!-- ============ Hero ============ -->
 <header class="hero">
   <svg class="hero-art" viewBox="0 0 1200 400" preserveAspectRatio="xMidYMax slice" aria-hidden="true" focusable="false">
-    <circle cx="690" cy="150" r="62" fill="#B8322A" opacity=".92"/>
+    <defs><mask id="crescent"><rect width="1200" height="400" fill="#fff"/><circle cx="722" cy="128" r="56" fill="#000"/></mask></defs>
+    <circle cx="690" cy="150" r="64" fill="#C08F3A" mask="url(#crescent)"/>
     <path d="M0 290 L80 262 L150 280 L240 225 L330 270 L410 238 L500 285 L600 232 L700 276 L790 240 L880 282 L980 228 L1070 272 L1140 250 L1200 268 L1200 400 L0 400Z" fill="#A9B4C4" opacity=".6"/>
     <path d="M0 330 L100 292 L190 322 L290 268 L380 318 L470 280 L560 330 L670 285 L760 325 L860 272 L960 322 L1060 286 L1150 318 L1200 300 L1200 400 L0 400Z" fill="#6F7F99"/>
     <g fill="#F4EFE3">
@@ -337,13 +399,15 @@
     </g>
     <path d="M0 312 Q300 296 600 312 T1200 306 L1200 328 Q900 340 600 328 T0 334Z" fill="#F4EFE3" opacity=".55"/>
     <path d="M0 372 L90 345 L170 366 L270 338 L370 368 L470 346 L570 372 L680 342 L780 370 L880 344 L990 372 L1090 348 L1200 368 L1200 400 L0 400Z" fill="#2B3A55"/>
+    <g fill="none" stroke="#2B3A55" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M380 382 L380 320 M380 351.0 L367.6 331.2 M380 351.0 L392.4 331.2 M380 337.4 L373.8 320 M380 337.4 L386.2 320 M450 382 L450 312 M450 347.0 L436.0 324.6 M450 347.0 L464.0 324.6 M450 331.6 L443.0 312 M450 331.6 L457.0 312 M520 382 L520 318 M520 350.0 L507.2 329.5 M520 350.0 L532.8 329.5 M520 335.9 L513.6 318 M520 335.9 L526.4 318 M590 382 L590 308 M590 345.0 L575.2 321.3 M590 345.0 L604.8 321.3 M590 328.7 L582.6 308 M590 328.7 L597.4 308 M660 382 L660 316 M660 349.0 L646.8 327.9 M660 349.0 L673.2 327.9 M660 334.5 L653.4 316 M660 334.5 L666.6 316 M730 382 L730 310 M730 346.0 L715.6 323.0 M730 346.0 L744.4 323.0 M730 330.2 L722.8 310 M730 330.2 L737.2 310 M800 382 L800 318 M800 350.0 L787.2 329.5 M800 350.0 L812.8 329.5 M800 335.9 L793.6 318 M800 335.9 L806.4 318 M870 382 L870 312 M870 347.0 L856.0 324.6 M870 347.0 L884.0 324.6 M870 331.6 L863.0 312 M870 331.6 L877.0 312 M940 382 L940 320 M940 351.0 L927.6 331.2 M940 351.0 L952.4 331.2 M940 337.4 L933.8 320 M940 337.4 L946.2 320 M1010 382 L1010 314 M1010 348.0 L996.4 326.2 M1010 348.0 L1023.6 326.2 M1010 333.0 L1003.2 314 M1010 333.0 L1016.8 314 M1080 382 L1080 322 M1080 352.0 L1068.0 332.8 M1080 352.0 L1092.0 332.8 M1080 338.8 L1074.0 322 M1080 338.8 L1086.0 322"/></g>
+    <g fill="#F2C45A" opacity=".95"><circle cx="380" cy="320" r="2.2"/><circle cx="373.8" cy="320" r="2.2"/><circle cx="386.2" cy="320" r="2.2"/><circle cx="367.6" cy="331.2" r="2.2"/><circle cx="392.4" cy="331.2" r="2.2"/><circle cx="450" cy="312" r="2.2"/><circle cx="443.0" cy="312" r="2.2"/><circle cx="457.0" cy="312" r="2.2"/><circle cx="436.0" cy="324.6" r="2.2"/><circle cx="464.0" cy="324.6" r="2.2"/><circle cx="520" cy="318" r="2.2"/><circle cx="513.6" cy="318" r="2.2"/><circle cx="526.4" cy="318" r="2.2"/><circle cx="507.2" cy="329.5" r="2.2"/><circle cx="532.8" cy="329.5" r="2.2"/><circle cx="590" cy="308" r="2.2"/><circle cx="582.6" cy="308" r="2.2"/><circle cx="597.4" cy="308" r="2.2"/><circle cx="575.2" cy="321.3" r="2.2"/><circle cx="604.8" cy="321.3" r="2.2"/><circle cx="660" cy="316" r="2.2"/><circle cx="653.4" cy="316" r="2.2"/><circle cx="666.6" cy="316" r="2.2"/><circle cx="646.8" cy="327.9" r="2.2"/><circle cx="673.2" cy="327.9" r="2.2"/><circle cx="730" cy="310" r="2.2"/><circle cx="722.8" cy="310" r="2.2"/><circle cx="737.2" cy="310" r="2.2"/><circle cx="715.6" cy="323.0" r="2.2"/><circle cx="744.4" cy="323.0" r="2.2"/><circle cx="800" cy="318" r="2.2"/><circle cx="793.6" cy="318" r="2.2"/><circle cx="806.4" cy="318" r="2.2"/><circle cx="787.2" cy="329.5" r="2.2"/><circle cx="812.8" cy="329.5" r="2.2"/><circle cx="870" cy="312" r="2.2"/><circle cx="863.0" cy="312" r="2.2"/><circle cx="877.0" cy="312" r="2.2"/><circle cx="856.0" cy="324.6" r="2.2"/><circle cx="884.0" cy="324.6" r="2.2"/><circle cx="940" cy="320" r="2.2"/><circle cx="933.8" cy="320" r="2.2"/><circle cx="946.2" cy="320" r="2.2"/><circle cx="927.6" cy="331.2" r="2.2"/><circle cx="952.4" cy="331.2" r="2.2"/><circle cx="1010" cy="314" r="2.2"/><circle cx="1003.2" cy="314" r="2.2"/><circle cx="1016.8" cy="314" r="2.2"/><circle cx="996.4" cy="326.2" r="2.2"/><circle cx="1023.6" cy="326.2" r="2.2"/><circle cx="1080" cy="322" r="2.2"/><circle cx="1074.0" cy="322" r="2.2"/><circle cx="1086.0" cy="322" r="2.2"/><circle cx="1068.0" cy="332.8" r="2.2"/><circle cx="1092.0" cy="332.8" r="2.2"/></g>
     <path d="M0 360 Q300 346 600 360 T1200 356 L1200 372 Q900 380 600 372 T0 376Z" fill="#F4EFE3" opacity=".35"/>
   </svg>
   <div class="snow" aria-hidden="true"></div>
   <div class="hero-inner">
     <h1 class="vtitle">仙台</h1>
-    <p class="vsub">冬の旅</p>
-    <div class="hanko" aria-hidden="true">冬<br>旅</div>
+    <p class="vsub">杜の都・冬の旅</p>
+    <div class="hanko" aria-hidden="true">杜<br>都</div>
   </div>
 </header>
 
@@ -462,7 +526,7 @@
 
 <footer>
   <svg class="band-bg" aria-hidden="true" focusable="false"><rect width="100%" height="100%" fill="url(#seigaiha)"/></svg>
-  <span>良い旅を</span>
+  <span>杜の都より　良い旅を</span>
 </footer>
 
 <!-- ============ 地圖視窗 ============ -->
