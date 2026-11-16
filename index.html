@@ -12,9 +12,9 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Shippori+Mincho:wght@500;700&display=swap">
 
-<!-- 地圖：Leaflet（免金鑰、免申請） -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<!-- 地圖：MapLibre GL（向量地圖）＋ OpenFreeMap（免金鑰）＋ OSRM（實際道路路線） -->
+<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css">
+<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
 
 <style>
   :root {
@@ -294,10 +294,13 @@
   .chip b { width: 22px; height: 22px; border-radius: 50%; background: var(--shu); color: #fff; font: 700 .72rem/22px var(--mincho); text-align: center; }
   .legal { margin-top: 6px; font-size: .74rem; line-height: 1.5; color: var(--sumi-2); }
   .pin { width: 30px; height: 30px; border-radius: 50%; background: var(--shu); color: #fff; border: 2px solid var(--washi); box-shadow: 0 0 0 1.5px var(--sumi), 0 2px 5px rgba(0,0,0,.3); font: 700 .85rem/26px var(--mincho); text-align: center; }
-  .leaflet-container { font-family: var(--serif); }
-  .leaflet-tooltip { background: var(--paper); color: var(--sumi); border: 1px solid var(--sumi); border-radius: 0; box-shadow: none; font-family: var(--serif); }
-  .leaflet-popup-content-wrapper { border-radius: 0; background: var(--paper); color: var(--sumi); border: 1px solid var(--sumi); }
-  .leaflet-popup-tip { background: var(--paper); }
+  .maplibregl-map { font-family: var(--serif); }
+  .maplibregl-popup-content { border-radius: 0; background: var(--paper); color: var(--sumi); border: 1px solid var(--sumi); box-shadow: none; padding: 10px 28px 10px 12px; font-family: var(--serif); }
+  .maplibregl-popup-anchor-top .maplibregl-popup-tip { border-bottom-color: var(--paper); }
+  .maplibregl-popup-anchor-bottom .maplibregl-popup-tip { border-top-color: var(--paper); }
+  .maplibregl-popup-anchor-left .maplibregl-popup-tip { border-right-color: var(--paper); }
+  .maplibregl-popup-anchor-right .maplibregl-popup-tip { border-left-color: var(--paper); }
+  .pin { cursor: pointer; }
   .pop a { color: var(--ai); }
   .map-error { padding: 24px; text-align: center; color: var(--shu); }
 
@@ -378,7 +381,7 @@
   .sheet { border-radius: 24px; border: 1px solid var(--edge); outline: 1px solid rgba(31,27,22,.12); outline-offset: -6px; box-shadow: 0 20px 50px rgba(31,27,22,.35); }
   #map { border-radius: 16px; border: 1px solid var(--edge); overflow: hidden; }
   .chip { border-radius: 999px; border-color: var(--edge); }
-  .leaflet-tooltip, .leaflet-popup-content-wrapper { border-radius: 12px; border-color: var(--edge); }
+  .maplibregl-popup-content { border-radius: 12px; border-color: var(--edge); }
 
   /* ---------- 首頁背景：照片／插畫輪播 ---------- */
   .hero { height: clamp(420px, 41.7vw, 640px); min-height: 0; }
@@ -562,7 +565,7 @@
     </div>
     <div id="map"></div>
     <div class="chips" id="chips"></div>
-    <p class="legal">圖釘位置為概略位置，連線是直線示意、不是實際路線。點圖釘可在 Google Maps 查確切位置，要導航請用右上方按鈕。</p>
+    <p class="legal" id="legal">圖釘位置為概略位置。點圖釘可在 Google Maps 查確切位置，要導航請用右上方按鈕。地圖 © OpenFreeMap、OpenStreetMap contributors；路線 © OSRM。</p>
   </div>
 </div>
 
@@ -766,33 +769,74 @@ function routeUrl(d) {
 }
 
 /* --- 地圖 --- */
-let map = null, layer = null, base = {}, baseKey = null, markers = [], lastFocus = null;
+let map = null, base = {}, baseKey = null, markers = [], lastFocus = null, routeData = null, routeToken = 0;
+const STYLES = {
+  pale: "https://tiles.openfreemap.org/styles/positron",
+  std:  "https://tiles.openfreemap.org/styles/liberty"
+};
+const LEGAL_BASE = "圖釘位置為概略位置。點圖釘可在 Google Maps 查確切位置，要導航請用右上方按鈕。地圖 © OpenFreeMap、OpenStreetMap contributors";
+
+function setLegal(kind) {
+  const el = $("#legal"); if (!el) return;
+  el.textContent = LEGAL_BASE + (kind === "road"
+    ? "；藍色實線為實際道路路線（OSRM 估算，僅供參考，實際請以導航為準）。"
+    : kind === "line"
+      ? "；虛線為直線示意、不是實際路線。"
+      : "。");
+}
+
+/* 在目前樣式上畫路線（換底圖後 setStyle 會清掉，所以要能重畫） */
+function drawRoute() {
+  if (!map || !routeData) return;
+  ["route-line", "route-casing"].forEach(id => { if (map.getLayer(id)) map.removeLayer(id); });
+  if (map.getSource("route")) map.removeSource("route");
+  if (!routeData.coords || routeData.coords.length < 2) return;
+  map.addSource("route", { type: "geojson", data: { type: "Feature", geometry: { type: "LineString", coordinates: routeData.coords } } });
+  if (!routeData.dashed) {
+    map.addLayer({ id: "route-casing", type: "line", source: "route", layout: { "line-join": "round", "line-cap": "round" },
+      paint: { "line-color": "#fff", "line-width": 8, "line-opacity": .9 } });
+  }
+  map.addLayer({ id: "route-line", type: "line", source: "route", layout: { "line-join": "round", "line-cap": routeData.dashed ? "butt" : "round" },
+    paint: routeData.dashed
+      ? { "line-color": "#2B3A55", "line-width": 3, "line-opacity": .8, "line-dasharray": [2, 2] }
+      : { "line-color": "#2B5FB5", "line-width": 5, "line-opacity": .9 } });
+}
 
 function setBase(key) {
-  if (!map || !base[key]) return;
-  if (baseKey && base[baseKey]) map.removeLayer(base[baseKey]);
-  base[key].addTo(map); baseKey = key;
+  if (!map || !STYLES[key]) return;
   document.querySelectorAll("[data-base]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.base === key)));
   store.set("sendai2026:base", key);
+  if (baseKey === key) return;
+  baseKey = key;
+  map.setStyle(STYLES[key]);
+  map.once("style.load", drawRoute);
 }
 
 function initMap() {
-  map = L.map("map");
-  base.pale = L.tileLayer("https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png", {
-    maxZoom: 18,
-    attribution: '<a href="https://maps.gsi.go.jp/development/ichiran.html" target="_blank" rel="noopener">地理院タイル</a>'
-  });
-  const gsiAttr = '<a href="https://maps.gsi.go.jp/development/ichiran.html" target="_blank" rel="noopener">地理院タイル</a>';
-  base.std = L.tileLayer("https://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png", { maxZoom: 18, attribution: gsiAttr });
-  base.esri = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}", {
-    maxZoom: 18, attribution: "Tiles &copy; Esri"
-  });
-  // 地理院圖磚連續載入失敗時，自動換成備用地圖（Esri）
-  let errs = 0;
-  ["pale", "std"].forEach(k => base[k].on("tileerror", () => { if (++errs === 6 && baseKey !== "esri") setBase("esri"); }));
-  layer = L.layerGroup().addTo(map);
   const saved = store.get("sendai2026:base");
-  setBase(saved === "std" ? "std" : "pale");
+  baseKey = saved === "std" ? "std" : "pale";
+  map = new maplibregl.Map({
+    container: "map", style: STYLES[baseKey], center: [140.87, 38.26], zoom: 10,
+    attributionControl: { compact: true }, pixelRatio: Math.max(window.devicePixelRatio || 1, 2) > 3 ? 3 : Math.max(window.devicePixelRatio || 1, 2)
+  });
+  map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-right");
+  setBase(baseKey);
+  document.querySelectorAll("[data-base]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.base === baseKey)));
+}
+
+/* 向 OSRM 要實際道路路線；失敗就回傳 null，改畫直線 */
+async function fetchRoadRoute(coords, token) {
+  const ctl = new AbortController();
+  const timer = setTimeout(() => ctl.abort(), 9000);
+  try {
+    const path = coords.map(c => c[0].toFixed(5) + "," + c[1].toFixed(5)).join(";");
+    const r = await fetch("https://router.project-osrm.org/route/v1/driving/" + path + "?overview=full&geometries=geojson", { signal: ctl.signal });
+    if (!r.ok) return null;
+    const j = await r.json();
+    if (token !== routeToken) return null;
+    return j.code === "Ok" && j.routes && j.routes[0] ? j.routes[0].geometry.coordinates : null;
+  } catch (e) { return null; }
+  finally { clearTimeout(timer); }
 }
 
 function openMap(i) {
@@ -804,35 +848,60 @@ function openMap(i) {
   document.body.style.overflow = "hidden";
   $("#modal-close").focus();
 
-  if (typeof L === "undefined") {
-    $("#map").innerHTML = '<p class="map-error">地圖元件載入失敗，請確認網路後重新整理。你仍可用右上方按鈕在 Google Maps 開啟路線。</p>';
+  let ok = typeof maplibregl !== "undefined";
+  try { if (ok && !maplibregl.supported()) ok = false; } catch (e) {}
+  if (!ok) {
+    $("#map").innerHTML = '<p class="map-error">地圖元件載入失敗（或此裝置不支援 WebGL），請確認網路後重新整理。你仍可用右上方按鈕在 Google Maps 開啟路線。</p>';
     $("#chips").innerHTML = "";
     return;
   }
-  if (!map) initMap();
-  layer.clearLayers(); markers = [];
+  if (!map) { $("#map").innerHTML = ""; initMap(); }
+  const token = ++routeToken;
+  markers.forEach(m => m.remove()); markers = [];
+  routeData = null; drawRoute(); setLegal("");
 
-  // 視窗剛顯示時尺寸還沒算好，要等一下再 invalidateSize
-  setTimeout(() => {
-    map.invalidateSize();
-    const coords = p.map(e => e.pos);
-    if (coords.length > 1) L.polyline(coords, { color: "#2B3A55", weight: 3, opacity: .8, dashArray: "6 8" }).addTo(layer);
+  requestAnimationFrame(() => {
+    map.resize();
+    // 路線：只連 noRoute 以外的點（座標是 [lng, lat]）
+    const routable = p.filter(e => !e.noRoute).map(e => [e.pos[1], e.pos[0]]);
+    const straight = routable.length > 1 ? routable : null;
+
     p.forEach((e, k) => {
-      const icon = L.divIcon({ className: "pin-wrap", html: `<div class="pin">${k + 1}</div>`, iconSize: [30, 30], iconAnchor: [15, 15] });
-      const m = L.marker(e.pos, { icon, title: e.name, keyboard: true })
-        .bindTooltip(e.name, { direction: "top", offset: [0, -14] })
-        .bindPopup(`<div class="pop"><b>${esc(e.name)}</b><br>${esc(e.t)}<br><a href="${searchUrl(e)}" target="_blank" rel="noopener">在 Google Maps 查看</a></div>`)
-        .addTo(layer);
+      const el = document.createElement("div");
+      el.className = "pin"; el.textContent = k + 1;
+      el.setAttribute("role", "button"); el.tabIndex = 0; el.title = e.name; el.setAttribute("aria-label", `${k + 1}. ${e.name}`);
+      const popup = new maplibregl.Popup({ offset: 18, closeButton: true, maxWidth: "240px" })
+        .setHTML(`<div class="pop"><b>${esc(e.name)}</b><br>${esc(e.t)}<br><a href="${searchUrl(e)}" target="_blank" rel="noopener">在 Google Maps 查看</a></div>`);
+      const m = new maplibregl.Marker({ element: el, anchor: "center" }).setLngLat([e.pos[1], e.pos[0]]).setPopup(popup).addTo(map);
+      el.addEventListener("keydown", ev => { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); m.togglePopup(); } });
       markers.push(m);
     });
-    if (coords.length === 1) map.setView(coords[0], 15);
-    else map.fitBounds(coords, { padding: [40, 40], maxZoom: 15 });
-  }, 60);
+
+    const all = p.map(e => [e.pos[1], e.pos[0]]);
+    if (all.length === 1) map.jumpTo({ center: all[0], zoom: 15 });
+    else if (all.length > 1) {
+      const bnd = all.reduce((b, c) => b.extend(c), new maplibregl.LngLatBounds(all[0], all[0]));
+      map.fitBounds(bnd, { padding: 50, maxZoom: 15, duration: 0 });
+    }
+
+    const showLine = (coords, dashed, kind) => {
+      if (token !== routeToken) return;
+      routeData = { coords, dashed };
+      const go = () => { if (token === routeToken) { drawRoute(); setLegal(kind); } };
+      if (map.isStyleLoaded()) go(); else map.once("idle", go);
+    };
+    if (!straight) return;
+    if (d.mode === "transit") { showLine(straight, true, "line"); return; }   // 電車日不套用開車路線
+    showLine(straight, true, "line");   // 先顯示虛線，道路路線回來後再換掉
+    fetchRoadRoute(routable, token).then(road => { if (road && road.length > 1) showLine(road, false, "road"); });
+  });
 
   $("#chips").innerHTML = p.map((e, k) => `<button class="chip" type="button" data-k="${k}"><b>${k + 1}</b>${esc(e.name)}</button>`).join("");
 }
 
 function closeMap() {
+  routeToken++;
+  markers.forEach(m => { const pp = m.getPopup(); if (pp && pp.isOpen()) pp.remove(); });
   $("#modal").classList.remove("open");
   document.body.style.overflow = "";
   if (lastFocus && lastFocus.focus) lastFocus.focus();
@@ -843,8 +912,8 @@ $("#modal").addEventListener("click", ev => { if (ev.target.id === "modal") clos
 $("#chips").addEventListener("click", ev => {
   const c = ev.target.closest(".chip"); if (!c || !map) return;
   const m = markers[+c.dataset.k]; if (!m) return;
-  map.flyTo(m.getLatLng(), Math.max(map.getZoom(), 14), { duration: .6 });
-  m.openTooltip();
+  map.flyTo({ center: m.getLngLat(), zoom: Math.max(map.getZoom(), 14), duration: 600 });
+  const pp = m.getPopup(); if (pp && !pp.isOpen()) m.togglePopup();
 });
 document.querySelectorAll("[data-base]").forEach(b => b.addEventListener("click", () => setBase(b.dataset.base)));
 document.addEventListener("keydown", ev => {
