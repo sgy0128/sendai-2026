@@ -821,12 +821,13 @@ footer .band-bg{display:none}footer span{background:none}
    q     點圖釘／匯出路線時給 Google Maps 搜尋的字（可省略，預設用 name）
    desc  景點介紹（可省略）；tips  小提醒陣列（營業時間、票價、注意事項）；src  資料來源網址
          以上有填，該景點下方就會出現可展開的「景點資訊」。每天還可在 title 旁加 summary 寫當日大綱。
+   far   true → 地圖預設視野不包含這個點（距離很遠，例如桃園機場），但仍會有圖釘和清單項目
    noRoute  true → 不放進 Google Maps 導航路線（例如纜車山頂站）
    飯店還沒決定，所以沒有座標；訂好後在 Check-in 那行補上 pos 即可
    ========================================================== */
 const itinerary = [
   { day: 1, date: "2026-12-08", wd: "二", title: "抵達・仙台", summary: "下午抵達仙台、取車入住，晚上吃牛舌，再到仙台站周邊逛逛。", hotel: "仙台大都會大飯店", mode: "driving", events: [
-    { t: "10:15",       name: "桃園 T2 起飛",          tag: "航班", note: "長榮 BR118" },
+    { t: "10:15",       name: "桃園 T2 起飛",          tag: "航班", note: "長榮 BR118", pos: [25.0777, 121.2329], q: "桃園國際機場第二航廈", noRoute: true, far: true },
     { t: "14:25",       name: "抵達仙台機場",         tag: "航班", note: "BR118 抵達", pos: [38.1397, 140.9170], q: "仙台空港" },
     { t: "14:25–15:30", name: "入境、領行李",         tag: "其他" },
     { t: "15:30–16:30", name: "仙台機場取車 → 仙台市區", tag: "交通", note: "15:30 取車（冬季雪胎）" },
@@ -1161,7 +1162,7 @@ function openMap(i) {
       markers.push(m);
     });
 
-    const all = p.map(e => [e.pos[1], e.pos[0]]);
+    const all = p.filter(e => !e.far).map(e => [e.pos[1], e.pos[0]]);   // far：太遠的點（例如出發機場）不納入預設視野，點清單才會飛過去
     if (all.length === 1) map.jumpTo({ center: all[0], zoom: 15 });
     else if (all.length > 1) {
       const bnd = all.reduce((b, c) => b.extend(c), new maplibregl.LngLatBounds(all[0], all[0]));
