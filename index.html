@@ -541,6 +541,13 @@ footer .band-bg{display:none}footer span{background:none}
 .pin, .stop .n { background: var(--pc, var(--shu)); }
 .pin { width: 32px; height: 32px; line-height: 28px; border: 2.5px solid #fff; box-shadow: 0 2px 8px rgba(31,27,22,.4); transition: transform .15s, box-shadow .15s; }
 .pin.norte { border-style: dashed; }
+.pin.dim { opacity: .4; }
+.seg { display: flex; align-items: center; gap: 6px; margin-top: 8px; }
+.seg-l { font-size: .82rem; color: var(--sumi-2); flex: none; }
+.seg select { flex: 1; min-width: 0; min-height: 40px; padding: 4px 8px; font: inherit; font-size: .86rem; color: var(--sumi); background: var(--paper); border: 1px solid var(--edge); border-radius: 12px; }
+.seg-arrow { color: var(--shu); flex: none; }
+.seg .btn { flex: none; min-height: 40px; padding: 4px 12px; font-size: .85rem; }
+.seg[hidden] { display: none; }
 .pin.sel { transform: scale(1.25); box-shadow: 0 0 0 4px rgba(232,135,58,.45), 0 3px 10px rgba(31,27,22,.45); z-index: 3; }
 .maplibregl-popup-content { padding: 12px 30px 12px 12px; box-shadow: 0 8px 24px rgba(31,27,22,.28); }
 .pop-top { display: flex; align-items: center; gap: 10px; }
@@ -761,6 +768,13 @@ footer .band-bg{display:none}footer span{background:none}
       </div>
       <span class="grow"></span>
       <a class="btn shu" id="gmaps" target="_blank" rel="noopener">在 Google Maps 開啟當日路線</a>
+    </div>
+    <div class="seg" id="seg">
+      <span class="seg-l">路段</span>
+      <select id="seg-a" aria-label="路段起點"></select>
+      <span class="seg-arrow" aria-hidden="true">→</span>
+      <select id="seg-b" aria-label="路段終點"></select>
+      <button class="btn ghost" id="seg-all" type="button" hidden>看全程</button>
     </div>
     <div class="map-body">
       <div class="map-col">
@@ -994,8 +1008,8 @@ renderTabs(); renderPanel();
 /* --- Google Maps 連結 --- */
 const qOf = e => e.q || e.name;
 const searchUrl = e => "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(qOf(e));
-function routeUrl(d) {
-  const p = pins(d).filter(e => !e.noRoute);
+function routeUrl(d, list) {
+  const p = list || pins(d).filter(e => !e.noRoute);
   if (p.length === 0) return "#";
   if (p.length === 1) return searchUrl(p[0]);
   let u = "https://www.google.com/maps/dir/?api=1&travelmode=" + (d.mode || "driving") +
@@ -1107,16 +1121,17 @@ function openMap(i) {
     return;
   }
   if (!map) { $("#map").innerHTML = ""; initMap(); }
-  const token = ++routeToken;
+  curDay = i; curPins = p; seg = null;
+  { const opts = p.map((e, k) => e.noRoute ? "" : `<option value="${k}">${k + 1}. ${esc(e.name)}</option>`).join("");
+    $("#seg-a").innerHTML = '<option value="">起點…</option>' + opts;
+    $("#seg-b").innerHTML = '<option value="">終點…</option>' + opts;
+    $("#seg-all").hidden = true; }
   markers.forEach(m => m.remove()); markers = [];
   routeData = null; drawRoute(); setLegal("");
 
   requestAnimationFrame(() => {
     map.resize();
     // 路線：只連 noRoute 以外的點（座標是 [lng, lat]）
-    const routable = p.filter(e => !e.noRoute).map(e => [e.pos[1], e.pos[0]]);
-    const straight = routable.length > 1 ? routable : null;
-
     p.forEach((e, k) => {
       const el = document.createElement("div");
       el.className = "pin" + (e.noRoute ? " norte" : ""); el.dataset.tag = e.tag; el.textContent = k + 1;
@@ -1136,34 +1151,7 @@ function openMap(i) {
       markers.push(m);
     });
 
-    const all = p.filter(e => !e.far).map(e => [e.pos[1], e.pos[0]]);   // far：太遠的點（例如出發機場）不納入預設視野，點清單才會飛過去
-    if (all.length === 1) map.jumpTo({ center: all[0], zoom: 15 });
-    else if (all.length > 1) {
-      const bnd = all.reduce((b, c) => b.extend(c), new maplibregl.LngLatBounds(all[0], all[0]));
-      fitState = { bnd, single: null };
-      map.fitBounds(bnd, { padding: 60, maxZoom: 15, duration: 0 });
-    }
-    if (all.length === 1) fitState = { bnd: null, single: all[0] };
-
-    const showLine = (coords, dashed, kind) => {
-      if (token !== routeToken) return;
-      routeData = { coords, dashed };
-      const go = () => { if (token === routeToken) { drawRoute(); setLegal(kind); } };
-      if (map.isStyleLoaded()) go(); else map.once("idle", go);
-    };
-    if (!straight) return;
-    if (d.mode === "transit") { showLine(straight, true, "line"); return; }   // 電車日不套用開車路線
-    showLine(straight, true, "line");   // 先顯示虛線，道路路線回來後再換掉
-    fetchRoadRoute(routable, token).then(road => {
-      if (!road || !road.coords || road.coords.length < 2) return;
-      showLine(road.coords, false, "road");
-      if (token !== routeToken) return;
-      const km = road.dist / 1000, mins = Math.round(road.dur / 60);
-      const t = mins >= 60 ? `${Math.floor(mins / 60)} 小時 ${mins % 60} 分` : `${mins} 分`;
-      const el = $("#route-sum");
-      el.innerHTML = `<b>全程約 ${km >= 10 ? Math.round(km) : km.toFixed(1)} 公里</b><span>開車約 ${t}</span><small>不含冬季路況與停留</small>`;
-      el.hidden = false;
-    });
+    applyRoute(true);
   });
 
   $("#stops").innerHTML = p.map((e, k) => `<button class="stop" type="button" role="listitem" data-k="${k}">
@@ -1172,7 +1160,58 @@ function openMap(i) {
   $("#stops").scrollTop = 0;
 }
 
-let fitState = null;
+let curDay = 0, curPins = [], seg = null, fitState = null;
+/* 畫路線：seg 為 null 時畫整天，否則只畫選定的兩個地點之間 */
+function applyRoute(fit) {
+  if (!map) return;
+  const d = itinerary[curDay], token = ++routeToken;
+  const full = curPins.filter(e => !e.noRoute);
+  const list = seg ? [curPins[seg[0]], curPins[seg[1]]] : full;
+  markers.forEach((m, i) => m.getElement().classList.toggle("dim", !!seg && i !== seg[0] && i !== seg[1]));
+  $("#gmaps").href = routeUrl(d, list);
+  $("#gmaps").textContent = seg ? "在 Google Maps 開啟此路段" : "在 Google Maps 開啟當日路線";
+  $("#seg-all").hidden = !seg;
+  $("#route-sum").hidden = true;
+  routeData = null; drawRoute(); setLegal("");
+  if (fit) {
+    const all = (seg ? list : curPins.filter(e => !e.far)).map(e => [e.pos[1], e.pos[0]]);   // far：太遠的點（例如出發機場）不納入預設視野
+    if (all.length === 1) { fitState = { bnd: null, single: all[0] }; map.jumpTo({ center: all[0], zoom: 15 }); }
+    else if (all.length > 1) {
+      const bnd = all.reduce((b, c) => b.extend(c), new maplibregl.LngLatBounds(all[0], all[0]));
+      fitState = { bnd, single: null };
+      map.fitBounds(bnd, { padding: 60, maxZoom: 15, duration: seg ? 600 : 0 });
+    }
+  }
+  const coords = list.map(e => [e.pos[1], e.pos[0]]);
+  if (coords.length < 2) return;
+  const showLine = (c, dashed, kind) => {
+    if (token !== routeToken) return;
+    routeData = { coords: c, dashed };
+    const go = () => { if (token === routeToken) { drawRoute(); setLegal(kind); } };
+    if (map.isStyleLoaded()) go(); else map.once("idle", go);
+  };
+  showLine(coords, true, "line");   // 先顯示虛線，道路路線回來後再換掉
+  if (d.mode === "transit") return;   // 電車日不套用開車路線
+  fetchRoadRoute(coords, token).then(road => {
+    if (!road || !road.coords || road.coords.length < 2) return;
+    showLine(road.coords, false, "road");
+    if (token !== routeToken) return;
+    const km = road.dist / 1000, mins = Math.round(road.dur / 60);
+    const t = mins >= 60 ? `${Math.floor(mins / 60)} 小時 ${mins % 60} 分` : `${mins} 分`;
+    const el = $("#route-sum");
+    el.innerHTML = `<b>${seg ? "此路段" : "全程"}約 ${km >= 10 ? Math.round(km) : km.toFixed(1)} 公里</b><span>開車約 ${t}</span><small>不含冬季路況與停留</small>`;
+    el.hidden = false;
+  });
+}
+function onSeg() {
+  const a = $("#seg-a").value, b = $("#seg-b").value;
+  seg = (a !== "" && b !== "" && a !== b) ? [+a, +b] : null;
+  applyRoute(true);
+}
+$("#seg-a").addEventListener("change", onSeg);
+$("#seg-b").addEventListener("change", onSeg);
+$("#seg-all").addEventListener("click", () => { $("#seg-a").value = ""; $("#seg-b").value = ""; onSeg(); });
+
 function fitAll() {
   if (!map || !fitState) return;
   markers.forEach(m => { const pp = m.getPopup(); if (pp && pp.isOpen()) pp.remove(); });
