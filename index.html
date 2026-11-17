@@ -306,6 +306,21 @@
   .ev .note.warn { color: var(--shu); background: rgba(184,50,42,.07); border-left: 3px solid var(--shu); padding: 3px 10px; margin-top: 6px; }
   .ev .note.warn b { margin-right: .6em; letter-spacing: .15em; }
   .ev.move .body { padding-bottom: 14px; }
+  .day-sum { margin: 0 0 14px; padding: 10px 14px; border-radius: 14px; background: rgba(63,88,120,.07); color: var(--sumi); font-size: .95rem; line-height: 1.7; }
+  .info { margin-top: 8px; }
+  .info summary { cursor: pointer; list-style: none; display: inline-flex; align-items: center; gap: 6px; padding: 3px 12px; border-radius: 999px;
+    border: 1px solid rgba(63,88,120,.35); color: var(--ai); font-size: .82rem; font-weight: 700; user-select: none; }
+  .info summary::-webkit-details-marker { display: none; }
+  .info summary::after { content: "＋"; font-weight: 400; }
+  .info[open] summary::after { content: "－"; }
+  .info[open] summary { background: var(--ai); color: var(--washi); }
+  .info-in { margin-top: 8px; padding: 10px 12px; border-radius: 12px; background: rgba(255,255,255,.7); border: 1px solid rgba(63,88,120,.15); font-size: .9rem; line-height: 1.7; }
+  .info-in .desc { margin: 0 0 6px; }
+  .info-in .tips { margin: 0 0 6px; padding-left: 1.2em; color: var(--sumi-2); }
+  .info-in .tips { list-style: disc; }
+  .info-in .tips li { margin: 2px 0; padding: 0; border: 0; display: list-item; list-style: disc; }
+  .info-in .tips li::marker { color: var(--shu); }
+  .info-in .src { font-size: .8rem; color: var(--ai); }
   .ev.move .name { font-weight: 400; font-size: .95rem; color: var(--sumi-2); }
   .ev.move .rail::before { border-left: 2px dashed var(--sumi-2); }
   .empty { text-align: center; padding: 40px 0; color: var(--sumi-2); }
@@ -712,67 +727,69 @@ footer .band-bg{display:none}footer span{background:none}
    pos   [緯度, 經度]：有填才會出現在地圖上並編號
          查法：Google Maps 對地點按右鍵，第一行數字就是
    q     點圖釘／匯出路線時給 Google Maps 搜尋的字（可省略，預設用 name）
+   desc  景點介紹（可省略）；tips  小提醒陣列（營業時間、票價、注意事項）；src  資料來源網址
+         以上有填，該景點下方就會出現可展開的「景點資訊」。每天還可在 title 旁加 summary 寫當日大綱。
    noRoute  true → 不放進 Google Maps 導航路線（例如纜車山頂站）
    飯店還沒決定，所以沒有座標；訂好後在 Check-in 那行補上 pos 即可
    ========================================================== */
 const itinerary = [
-  { day: 1, date: "2026-12-08", wd: "二", title: "抵達・仙台", hotel: "仙台大都會大飯店", mode: "driving", events: [
+  { day: 1, date: "2026-12-08", wd: "二", title: "抵達・仙台", summary: "下午抵達仙台、取車入住，晚上吃牛舌，再到仙台站周邊逛逛。", hotel: "仙台大都會大飯店", mode: "driving", events: [
     { t: "10:15",       name: "桃園 T2 起飛",          tag: "航班", note: "長榮 BR118" },
     { t: "14:25",       name: "抵達仙台機場",         tag: "航班", note: "BR118 抵達", pos: [38.1397, 140.9170], q: "仙台空港" },
     { t: "14:25–15:30", name: "入境、領行李",         tag: "其他" },
     { t: "15:30–16:30", name: "仙台機場取車 → 仙台市區", tag: "交通", note: "15:30 取車（冬季雪胎）" },
     { t: "16:30–17:30", name: "飯店 Check-in、休息",   tag: "住宿", pos: [38.2612, 140.8790], q: "Hotel Metropolitan Sendai, 1 Chome-1-1 Central, Aoba Ward, Sendai" },
-    { t: "17:30–19:00", name: "牛たん料理閣",         tag: "美食", note: "晚餐", pos: [38.2630, 140.8730], q: "牛たん料理 閣 仙台" },
+    { t: "17:30–19:00", name: "牛たん料理閣",         tag: "美食", desc: "仙台名物牛舌專門店，以「秘傳鹽」調味和獨特切法帶出口感。", tips: ["名掛丁店：平日 11:30–14:30、17:00–22:30（最後點餐 14:00／22:00）；週末與假日 11:00 開", "「閣」有多間分店，各店時間可能不同，以你實際去的那間為準", "熱門店晚餐時段可能要排隊，建議先訂位"], src: "https://hitosara.com/0031716584/", note: "晚餐", pos: [38.2630, 140.8730], q: "牛たん料理 閣 仙台" },
     { t: "19:00–21:00", name: "仙台站周邊逛街",       tag: "購物", pos: [38.2601, 140.8824], q: "仙台駅" }
   ]},
-  { day: 2, date: "2026-12-09", wd: "三", title: "瑞鳳殿・松島", hotel: "仙台大都會大飯店", mode: "driving", events: [
+  { day: 2, date: "2026-12-09", wd: "三", title: "瑞鳳殿・松島", summary: "上午參拜瑞鳳殿，接著到松島逛瑞巖寺、円通院、五大堂和海岸，晚上回仙台。", hotel: "仙台大都會大飯店", mode: "driving", events: [
     { t: "08:00",       name: "起床、早餐",           tag: "其他" },
     { t: "08:30–09:00", name: "仙台 → 瑞鳳殿",        tag: "交通" },
-    { t: "09:00–10:00", name: "瑞鳳殿",               tag: "景點", pos: [38.2472, 140.8983], q: "瑞鳳殿" },
+    { t: "09:00–10:00", name: "瑞鳳殿",               tag: "景點", desc: "仙台藩祖伊達政宗的靈廟。政宗過世翌年（1637 年）由二代藩主伊達忠宗建造，資料館可看挖掘出土資料的影片。", tips: ["12 月開放 9:00–16:20，最後入館 16:00", "門票 ¥570（高中生 ¥410、中小學生 ¥210）", "12/31 休館"], src: "https://www.walkerplus.com/spot/ar0204s129397/price.html", pos: [38.2472, 140.8983], q: "瑞鳳殿" },
     { t: "10:00–11:00", name: "瑞鳳殿 → 松島",        tag: "交通" },
-    { t: "11:00–12:00", name: "瑞巖寺",               tag: "景點", pos: [38.3704, 141.0633], q: "瑞巌寺" },
+    { t: "11:00–12:00", name: "瑞巖寺",               tag: "景點", desc: "松島代表古剎。本堂與庫裡都是國寶，本堂的「孔雀之間」等房間裝飾著伊達家的障壁畫；青龍殿（寶物館）收藏伊達政宗甲冑倚像等文物。", tips: ["12 月開放 8:30–15:30，閉門前 30 分鐘為最後受付", "門票 ¥1,000（中小學生 ¥500），含寶物館", "境內有洞窟遺跡群、紅白梅"], src: "https://www.gltjp.com/ja/article/item/20349/", pos: [38.3704, 141.0633], q: "瑞巌寺" },
     { t: "12:00–13:00", name: "松島午餐",             tag: "美食" },
-    { t: "13:00–13:45", name: "円通院",               tag: "景點", pos: [38.3693, 141.0640], q: "円通院" },
-    { t: "13:45–14:15", name: "五大堂",               tag: "景點", pos: [38.3686, 141.0652], q: "五大堂 松島" },
+    { t: "13:00–13:45", name: "円通院",               tag: "景點", desc: "伊達政宗嫡孫光宗的靈廟「三慧殿」（1647 年建）所在，是一座庭園寺院，位在瑞巖寺西側、面向松島灣。", tips: ["12 月開放 9:00–15:30，閉門前 30 分鐘為最後入場", "門票 ¥500（中小學生 ¥300）"], src: "https://www.walkerplus.com/spot/ar0204s585460/price.html", pos: [38.3693, 141.0640], q: "円通院" },
+    { t: "13:45–14:15", name: "五大堂",               tag: "景點", desc: "建在松島灣小島上的佛堂，1604 年由伊達政宗造營，是松島最具代表性的景色之一，也是東北最古老的桃山建築（重要文化財）。", tips: ["8:00 至日落，免費入場", "從 JR 松島海岸站步行約 7 分鐘", "沒有停車場，請把車停在別處再走過去"], src: "https://www.walkerplus.com/spot/ar0204s583628/price.html", pos: [38.3686, 141.0652], q: "五大堂 松島" },
     { t: "14:15–15:30", name: "松島海岸",             tag: "景點", note: "散步、看景色", pos: [38.3667, 141.0602], q: "松島海岸駅" },
-    { t: "15:30–17:00", name: "宮城県松島離宮",       tag: "購物", note: "逛街、伴手禮", pos: [38.3672, 141.0614], q: "宮城県松島離宮" },
+    { t: "15:30–17:00", name: "宮城県松島離宮",       tag: "購物", desc: "JR 松島海岸站前的複合設施，有離宮庭園、屋頂庭園「天空のピクニック」（可眺望松島灣）、博物館、咖啡廳、餐廳和伴手禮區。", tips: ["營業 9:00–18:00（依季節變動），無休"], src: "https://rurubu.jp/andmore/spot/80127800", note: "逛街、伴手禮", pos: [38.3672, 141.0614], q: "宮城県松島離宮" },
     { t: "17:00–18:00", name: "松島自由活動",         tag: "其他" },
     { t: "18:00–19:00", name: "松島晚餐",             tag: "美食" },
     { t: "19:00–20:00", name: "松島 → 仙台",          tag: "交通" }
   ]},
-  { day: 3, date: "2026-12-10", wd: "四", title: "山寺・山形・藏王溫泉", hotel: "蔵王温泉 岩清水料理の宿 季の里", mode: "driving", events: [
+  { day: 3, date: "2026-12-10", wd: "四", title: "山寺・山形・藏王溫泉", summary: "早上先到大崎八幡宮，再到山寺爬 1,015 階石階，下午逛山形霞城公園，晚上住藏王溫泉。", hotel: "蔵王温泉 岩清水料理の宿 季の里", mode: "driving", events: [
     { t: "07:30",       name: "起床、早餐",           tag: "其他" },
     { t: "08:00–08:30", name: "仙台 → 大崎八幡宮",    tag: "交通" },
-    { t: "08:30–09:15", name: "大崎八幡宮",           tag: "景點", pos: [38.2729, 140.8462], q: "大崎八幡宮" },
+    { t: "08:30–09:15", name: "大崎八幡宮",           tag: "景點", desc: "伊達政宗建造的神社，桃山建築的御社殿為國寶，裝飾華麗；另有縣內最古老的長床（重要文化財）。", tips: ["參拜時間資料標示 9:00–17:00，免費；你排 08:30 抵達，可能要先逛境內、或稍等", "建議出發前再確認社殿開放時間"], src: "https://www.gltjp.com/ja/article/item/20352/", pos: [38.2729, 140.8462], q: "大崎八幡宮" },
     { t: "09:15–10:30", name: "大崎八幡宮 → 山寺",    tag: "交通" },
-    { t: "10:30–12:30", name: "山寺／立石寺",         tag: "景點", note: "登山參觀", pos: [38.3135, 140.4343], q: "立石寺" },
+    { t: "10:30–12:30", name: "山寺／立石寺",         tag: "景點", desc: "松尾芭蕉寫下「蟬聲」俳句的山中古剎，要爬 1,015 階石階。途中有根本中堂、蟬塚，山頂附近的五大堂建在斷崖上、視野最好。", tips: ["8:00–16:00，無休；入山料 ¥500", "登頂約 40–60 分鐘", "冬天石階濕滑，務必穿防滑鞋；下山最容易跌倒，部分地方要扶繩索", "奧之院冬季封閉"], src: "https://www.gltjp.com/ja/directory/item/11572/", note: "登山參觀", pos: [38.3135, 140.4343], q: "立石寺" },
     { t: "12:30–13:15", name: "山寺午餐",             tag: "美食" },
     { t: "13:15–14:00", name: "山寺 → 山形市",        tag: "交通" },
-    { t: "14:00–15:00", name: "霞城公園／山形城跡",   tag: "景點", pos: [38.2562, 140.3282], q: "霞城公園" },
-    { t: "15:00–15:30", name: "最上義光歷史館",       tag: "景點", pos: [38.2586, 140.3325], q: "最上義光歴史館" },
+    { t: "14:00–15:00", name: "霞城公園／山形城跡",   tag: "景點", desc: "山形城跡整建的都市公園，約 35.9 公頃，復原了二之丸東大手門和本丸一文字門，東大手門廣場有最上義光騎馬像。", tips: ["免費入園；11–3 月開放時間 5:30 起（至 22:00）"], src: "https://rurubu.jp/andmore/spot/80004379/", pos: [38.2562, 140.3282], q: "霞城公園" },
+    { t: "15:00–15:30", name: "最上義光歷史館",       tag: "景點", desc: "介紹戰國武將最上義光的資料館，展品有他的頭盔、鐵製指揮棒，以及「長谷堂合戰圖屏風」複製品。", tips: ["9:00–17:00（最後入館 16:30），週一休館（遇假日順延）", "免費，參觀約 30 分鐘"], src: "https://rurubu.jp/andmore/spot/80004369", pos: [38.2586, 140.3325], q: "最上義光歴史館" },
     { t: "15:30–16:30", name: "山形市 → 藏王溫泉",    tag: "交通", note: "冬季路況預留時間", warn: true },
     { t: "16:30–17:00", name: "飯店 Check-in",        tag: "住宿", pos: [38.1450, 140.4400], q: "岩清水料理の宿 季の里 蔵王温泉" },
-    { t: "17:00–18:30", name: "泡溫泉、休息",         tag: "溫泉" },
+    { t: "17:00–18:30", name: "泡溫泉、休息",         tag: "溫泉", desc: "藏王溫泉是「奧羽三高湯」之一，泉質為強酸性硫磺泉，湯色乳白、水溫偏高，很多旅館是源泉放流。", tips: ["酸性很強，泡完建議沖洗，飾品（銀飾）容易變黑", "能治療的功效說法請當參考"], src: "https://www.yukoyuko.net/onsen/0057" },
     { t: "18:30–20:00", name: "溫泉旅館晚餐",         tag: "美食" },
-    { t: "20:00–22:00", name: "溫泉／溫泉街散步",     tag: "溫泉" }
+    { t: "20:00–22:00", name: "溫泉／溫泉街散步",     tag: "溫泉", desc: "溫泉街有 3 間共同浴場（「川原湯」是在地人的浴場），街角冒著湯煙，巷子裡有老旅館和土產店。名物是「稻花餅」和「玉蒟蒻」。", tips: ["部分露天風呂冬季會關閉，街最深處的「大露天風呂」冬天是否開放請先確認", "晚上路面結冰，鞋底要防滑"], src: "https://www.yukoyuko.net/onsen/0057" }
   ]},
-  { day: 4, date: "2026-12-11", wd: "五", title: "藏王樹冰・狐狸村", hotel: "Hotel Premium Green Plus", mode: "driving", events: [
+  { day: 4, date: "2026-12-11", wd: "五", title: "藏王樹冰・狐狸村", summary: "早上搭藏王纜車（停駛則改去狐狸村），中午去宮城藏王狐狸村，傍晚回仙台還車。", hotel: "Hotel Premium Green Plus", mode: "driving", events: [
     { t: "07:00",       name: "起床、早餐",           tag: "其他" },
-    { t: "07:40–08:00", name: "飯店 → 藏王纜車",      tag: "交通", note: "搭纜車，天候不佳可能停駛！停駛則改狐狸村～", warn: true, pos: [38.1470, 140.4430], q: "蔵王ロープウェイ 山麓駅" },
-    { t: "08:15–10:15", name: "藏王樹冰／地藏山頂站", tag: "景點", pos: [38.1330, 140.4330], q: "蔵王ロープウェイ 地蔵山頂駅", noRoute: true },
+    { t: "07:40–08:00", name: "飯店 → 藏王纜車",      tag: "交通", desc: "藏王纜車分兩段：蔵王山麓站 → 樹氷高原站（約 7 分），再轉乘 樹氷高原站 → 地蔵山頂站（約 10 分）。", tips: ["營運時間（2025–26 年度公告）：山麓線 8:30–17:00、山頂線 8:45–16:45", "來回票價：山麓線 ¥2,200、山頂線 ¥4,200（合計 ¥6,400）", "2026–27 年度時間與票價可能調整，出發前看官網運行狀況", "強風或天候不佳可能停駛"], src: "https://www.gltjp.com/ja/article/item/20194/", note: "搭纜車，天候不佳可能停駛！停駛則改狐狸村～", warn: true, pos: [38.1470, 140.4430], q: "蔵王ロープウェイ 山麓駅" },
+    { t: "08:15–10:15", name: "藏王樹冰／地藏山頂站", tag: "景點", desc: "地蔵山頂站前有樹冰群觀賞區，屋頂的「山頂テラス」可 360 度眺望樹冰群；站內餐廳「山頂」可以邊吃邊看。", tips: ["注意：纜車山麓線 8:30 才開、山頂線 8:45 才開，行程寫 08:15 到山頂來不及，最快大約 9:00 才會到", "公告的樹冰可見期是 12 月下旬到 3 月下旬，最佳 1 月下旬–2 月下旬；12/11 偏早，可能看不到成形的樹冰", "山頂可低於 -10℃，要戴手套、帽子、做好防風", "樹冰群前有安全繩，請勿越過"], src: "https://www.gltjp.com/ja/article/item/20194/", pos: [38.1330, 140.4330], q: "蔵王ロープウェイ 地蔵山頂駅", noRoute: true },
     { t: "10:15–10:45", name: "下山、取車",           tag: "交通" },
     { t: "10:45–12:00", name: "藏王 → 狐狸村",        tag: "交通", note: "實際時間視冬季路況", warn: true },
-    { t: "12:00–14:00", name: "宮城藏王狐狸村",       tag: "景點", note: "冬季最後入場約 15:30！", warn: true, pos: [38.0920, 140.5580], q: "宮城蔵王キツネ村" },
+    { t: "12:00–14:00", name: "宮城藏王狐狸村",       tag: "景點", desc: "日本唯一的狐狸動物園，在森林裡放養超過 100 隻狐狸，有北海道赤狐和少見的品種，園內還有稻荷神社，也有抱抱體驗。", tips: ["冬季 9:00–16:00，閉園前 30 分鐘為最後入場", "入村料 ¥1,500（中學生以上），小學生以下免費", "週三休（遇假日開）；12/11 是週五，有開", "餵食體驗只有週六日與假日，12/11 沒有", "從東北道白石 IC 約 15 公里、約 20 分鐘；停車場約 750 台"], src: "https://rurubu.jp/andmore/spot/80084070", note: "冬季最後入場約 15:30！", warn: true, pos: [38.0920, 140.5580], q: "宮城蔵王キツネ村" },
     { t: "14:00–16:00", name: "狐狸村 → 仙台",        tag: "交通" },
     { t: "16:00–17:00", name: "還車、前往飯店",       tag: "交通", note: "16:00 還車" },
     { t: "17:00–18:30", name: "飯店休息",             tag: "住宿", pos: [38.2622, 140.8770], q: "Hotel Premium Green Plus, 2 Chome-6-8 Central, Aoba Ward, Sendai" },
     { t: "18:30–20:00", name: "仙台晚餐",             tag: "美食" }
   ]},
-  { day: 5, date: "2026-12-12", wd: "六", title: "朝市・返程", hotel: "今日退房 Check-out", mode: "transit",
+  { day: 5, date: "2026-12-12", wd: "六", title: "朝市・返程", summary: "早上逛仙台朝市、買伴手禮，下午到機場搭 16:15 的 BR117 回台灣。", hotel: "今日退房 Check-out", mode: "transit",
     tip: { label: "彈性", text: "可自行調配行程～" }, events: [
     { t: "07:30",       name: "起床、早餐",           tag: "其他", note: "Check-out", pos: [38.2622, 140.8770], q: "Hotel Premium Green Plus, 2 Chome-6-8 Central, Aoba Ward, Sendai" },
     { t: "08:30–09:00", name: "前往仙台朝市",         tag: "交通" },
-    { t: "09:00–10:00", name: "仙台朝市",             tag: "美食", note: "早餐、採買", pos: [38.2605, 140.8785], q: "仙台朝市" },
+    { t: "09:00–10:00", name: "仙台朝市",             tag: "美食", desc: "被稱為「仙台的廚房」的市場街，集中了鮮魚、蔬果、肉鋪、熟食和小吃店，有三陸海產和宮城縣產蔬菜。", tips: ["仙台站西口步行約 5 分鐘（地鐵西 1 出口約 1 分鐘）", "整體約 8:00–18:00，依店家不同；邊走邊吃建議 10:00–14:00", "多數店家日曜、祝日休息；12/12 是週六", "はましん食堂（海鮮丼）7:00–15:00；おこわや（毛豆麻糬）8:00–15:00，不定休；ころっけや（可樂餅）10:00–17:00，賣完為止"], src: "https://matcha-jp.com/jp/9563", note: "早餐、採買", pos: [38.2605, 140.8785], q: "仙台朝市" },
     { t: "10:00–12:00", name: "仙台站周邊購物",       tag: "購物", note: "伴手禮", pos: [38.2601, 140.8824], q: "仙台駅" },
     { t: "12:00–13:00", name: "最後午餐",             tag: "美食" },
     { t: "13:00",       name: "仙台 → 仙台機場",      tag: "交通", note: "電車／地鐵…" },
@@ -824,6 +841,14 @@ let cur = todayIndex();
 const md = d => { const [, m, dd] = d.date.split("-").map(Number); return { m, d: dd }; };
 const pins = d => d.events.filter(e => e.pos);
 const timeHtml = t => { const p = t.split(/[–—]/); return p.length === 2 ? `${esc(p[0])}<span class="end">${esc(p[1])}</span>` : esc(t); };
+const infoHtml = e => {
+  if (!e.desc && !(e.tips && e.tips.length)) return "";
+  return `<details class="info"><summary>景點資訊</summary><div class="info-in">
+    ${e.desc ? `<p class="desc">${esc(e.desc)}</p>` : ""}
+    ${e.tips && e.tips.length ? `<ul class="tips">${e.tips.map(t => `<li>${esc(t)}</li>`).join("")}</ul>` : ""}
+    ${e.src ? `<a class="src" href="${esc(e.src)}" target="_blank" rel="noopener">資料來源 ↗</a>` : ""}
+  </div></details>`;
+};
 const noteHtml = e => !e.note ? "" :
   `<p class="note${e.warn ? " warn" : ""}">${e.warn ? "<b>注意</b>" : ""}${esc(e.note).replace(/\n/g, "<br>")}</p>`;
 
@@ -848,6 +873,7 @@ function renderPanel() {
       <div class="body">
         <div><span class="name">${esc(e.name)}</span><span class="tag t-${esc(e.tag)}">${esc(e.tag)}</span>${e.must ? '<span class="tag t-must" style="background:var(--shu);color:#fff;border-color:var(--shu)">必訪</span>' : ""}</div>
         ${noteHtml(e)}
+        ${infoHtml(e)}
       </div></li>`;
   }).join("");
 
@@ -862,6 +888,7 @@ function renderPanel() {
       </div>
       ${hasMap ? `<button class="btn" type="button" data-map="${cur}">路線預覽<small>地図</small></button>` : ""}
     </div>
+    ${d.summary ? `<p class="day-sum">${esc(d.summary)}</p>` : ""}
     ${d.tip ? `<p class="tip"><b>${esc(d.tip.label)}</b>${esc(d.tip.text)}</p>` : ""}
     <ol class="timeline">${rows}</ol>`;
 }
