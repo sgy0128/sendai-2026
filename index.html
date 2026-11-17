@@ -514,6 +514,67 @@ footer .band-bg{display:none}footer span{background:none}
   mask-composite:intersect}
 .ticket .stub{width:var(--stub) !important}
 @media (max-width:560px){.ticket{--stub:88px}}
+/* ===== 地圖頁面強化 ===== */
+.sheet-title { min-width: 0; }
+#modal-close { white-space: nowrap; flex: none; }
+.sheet-kicker { margin: 0; font-size: .74rem; letter-spacing: .18em; color: var(--shu); font-weight: 700; }
+.sheet-head h3 { margin: 2px 0 0; line-height: 1.25; }
+.sheet-sub { margin: 3px 0 0; font-size: .85rem; color: var(--sumi-2); line-height: 1.4; }
+.map-body { flex: 1; display: flex; gap: 12px; min-height: 0; margin-top: 12px; }
+.map-col { position: relative; flex: 1; min-width: 0; display: flex; }
+.map-col #map { flex: 1; margin-top: 0; min-height: 220px; box-shadow: inset 0 0 0 1px rgba(63,88,120,.1); }
+.route-sum { position: absolute; left: 10px; bottom: 28px; z-index: 2; display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px;
+  max-width: calc(100% - 20px); padding: 8px 14px; border-radius: 14px; background: rgba(255,255,255,.94); border: 1px solid var(--edge);
+  box-shadow: 0 4px 14px rgba(31,27,22,.18); font-size: .85rem; color: var(--sumi); }
+.route-sum[hidden] { display: none; }
+.route-sum b { font-family: var(--mincho); font-size: .98rem; color: var(--ai); }
+.route-sum small { flex-basis: 100%; font-size: .7rem; color: var(--sumi-2); }
+.map-fab { position: absolute; left: 10px; top: 10px; z-index: 2; display: inline-flex; align-items: center; gap: 5px; min-height: 36px; padding: 4px 12px;
+  border-radius: 999px; border: 1px solid var(--edge); background: rgba(255,255,255,.95); color: var(--ai); font: 700 .8rem var(--serif); cursor: pointer;
+  box-shadow: 0 3px 10px rgba(31,27,22,.16); }
+.map-fab:hover { background: var(--ai); color: #fff; }
+.stops { flex: none; width: 250px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; padding: 2px 4px 2px 0; overscroll-behavior: contain; }
+.stop { display: flex; align-items: center; gap: 10px; text-align: left; width: 100%; padding: 8px 12px 8px 8px; border-radius: 14px; cursor: pointer;
+  background: rgba(244,247,250,.9); border: 1px solid var(--edge); color: var(--sumi); font-family: inherit; transition: background .15s, border-color .15s, transform .15s; }
+.stop:hover { background: #fff; transform: translateX(-2px); }
+.stop.on { background: #fff; border-color: var(--shu); box-shadow: 0 0 0 2px rgba(232,135,58,.25); }
+.stop .n { flex: none; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; color: #fff; font: 700 .8rem var(--mincho); background: var(--shu); }
+.stop .s-main { display: flex; flex-direction: column; min-width: 0; }
+.stop .s-main b { font-size: .92rem; line-height: 1.3; }
+.stop .s-main small { font-size: .74rem; color: var(--sumi-2); margin-top: 1px; }
+/* 依類別上色（圖釘、清單編號、泡泡標籤共用） */
+.pin[data-tag="景點"], .stop .n[data-tag="景點"], .pop-tag[data-tag="景點"] { --pc: #3F5878; }
+.pin[data-tag="美食"], .stop .n[data-tag="美食"], .pop-tag[data-tag="美食"] { --pc: #D2562F; }
+.pin[data-tag="住宿"], .stop .n[data-tag="住宿"], .pop-tag[data-tag="住宿"] { --pc: #5B7F6A; }
+.pin[data-tag="購物"], .stop .n[data-tag="購物"], .pop-tag[data-tag="購物"] { --pc: #B07A2A; }
+.pin[data-tag="溫泉"], .stop .n[data-tag="溫泉"], .pop-tag[data-tag="溫泉"] { --pc: #2F8F83; }
+.pin[data-tag="航班"], .stop .n[data-tag="航班"], .pop-tag[data-tag="航班"] { --pc: #1F5B4A; }
+.pin[data-tag="交通"], .stop .n[data-tag="交通"], .pin[data-tag="其他"], .stop .n[data-tag="其他"], .pop-tag[data-tag="交通"], .pop-tag[data-tag="其他"] { --pc: #6B7686; }
+.pin, .stop .n { background: var(--pc, var(--shu)); }
+.pin { width: 32px; height: 32px; line-height: 28px; border: 2.5px solid #fff; box-shadow: 0 2px 8px rgba(31,27,22,.4); transition: transform .15s, box-shadow .15s; }
+.pin.norte { border-style: dashed; }
+.pin.sel { transform: scale(1.25); box-shadow: 0 0 0 4px rgba(232,135,58,.45), 0 3px 10px rgba(31,27,22,.45); z-index: 3; }
+.maplibregl-popup-content { padding: 12px 30px 12px 12px; box-shadow: 0 8px 24px rgba(31,27,22,.28); }
+.pop-top { display: flex; align-items: center; gap: 10px; }
+.pop-top img { flex: none; border-radius: 10px; background: #F4F7FA; }
+.pop-top > div { display: flex; flex-direction: column; min-width: 0; gap: 2px; }
+.pop-top b { font-size: .98rem; line-height: 1.3; }
+.pop-tag { align-self: flex-start; font-size: .68rem; padding: 0 8px; border-radius: 999px; color: #fff; background: var(--pc, var(--ai)); letter-spacing: .06em; }
+.pop-t { font-size: .78rem; color: var(--sumi-2); }
+.pop-note { margin: 8px 0 0; font-size: .8rem; color: var(--shu); line-height: 1.5; }
+.pop-desc { margin: 6px 0 0; font-size: .8rem; color: var(--sumi-2); line-height: 1.55; }
+.pop-act { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.pop-act a { font-size: .78rem; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--ai); text-decoration: none; color: var(--ai); }
+.pop-act a.go { background: var(--ai); color: #fff; }
+@media (max-width: 720px) {
+  .map-body { flex-direction: column; gap: 8px; }
+  .stops { width: auto; flex-direction: row; overflow-x: auto; overflow-y: hidden; padding: 2px 0 6px; }
+  .stop { flex: none; width: auto; min-width: 150px; max-width: 200px; }
+  .stop:hover { transform: none; }
+  .sheet-sub { font-size: .78rem; }
+  .route-sum { bottom: 30px; font-size: .78rem; padding: 6px 10px; }
+}
+
 .btn{align-items:center;line-height:1.2}
 .tools{align-items:center}
 </style>
@@ -710,7 +771,11 @@ footer .band-bg{display:none}footer span{background:none}
 <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
   <div class="sheet">
     <div class="sheet-head">
-      <h3 id="modal-title">路線預覽</h3>
+      <div class="sheet-title">
+        <p class="sheet-kicker" id="modal-kicker">路線預覽 ・ 地図</p>
+        <h3 id="modal-title">路線預覽</h3>
+        <p class="sheet-sub" id="modal-sub"></p>
+      </div>
       <button class="btn ghost" id="modal-close" type="button">關閉</button>
     </div>
     <div class="tools">
@@ -727,8 +792,16 @@ footer .band-bg{display:none}footer span{background:none}
       <span class="grow"></span>
       <a class="btn shu" id="gmaps" target="_blank" rel="noopener">在 Google Maps 開啟當日路線</a>
     </div>
-    <div id="map"></div>
-    <div class="chips" id="chips"></div>
+    <div class="map-body">
+      <div class="map-col">
+        <div id="map"></div>
+        <div class="route-sum" id="route-sum" hidden></div>
+        <button class="map-fab" id="fit" type="button" title="回到全部景點" aria-label="回到全部景點">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>全覽
+        </button>
+      </div>
+      <div class="stops" id="stops" role="list" aria-label="今日景點"></div>
+    </div>
     <p class="legal" id="legal">圖釘位置為概略位置。點圖釘可在 Google Maps 查確切位置，要導航請用右上方按鈕。地圖 © OpenFreeMap、OpenStreetMap contributors；路線 © OSRM。</p>
   </div>
 </div>
@@ -1032,7 +1105,8 @@ async function fetchRoadRoute(coords, token) {
     if (!r.ok) return null;
     const j = await r.json();
     if (token !== routeToken) return null;
-    return j.code === "Ok" && j.routes && j.routes[0] ? j.routes[0].geometry.coordinates : null;
+    return j.code === "Ok" && j.routes && j.routes[0]
+      ? { coords: j.routes[0].geometry.coordinates, dist: j.routes[0].distance, dur: j.routes[0].duration } : null;
   } catch (e) { return null; }
   finally { clearTimeout(timer); }
 }
@@ -1041,6 +1115,10 @@ function openMap(i) {
   const d = itinerary[i], p = pins(d);
   lastFocus = document.activeElement;
   $("#modal-title").textContent = `第${ZH[d.day]}日 路線預覽`;
+  { const { m, d: dd } = md(d);
+    $("#modal-kicker").textContent = `DAY ${d.day} ・ ${m}月${dd}日（${d.wd}）`;
+    $("#modal-sub").textContent = d.title + (d.hotel ? "　宿｜" + d.hotel : ""); }
+  $("#route-sum").hidden = true;
   $("#gmaps").href = routeUrl(d);
   $("#modal").classList.add("open");
   document.body.style.overflow = "hidden";
@@ -1050,7 +1128,7 @@ function openMap(i) {
   try { if (ok && !maplibregl.supported()) ok = false; } catch (e) {}
   if (!ok) {
     $("#map").innerHTML = '<p class="map-error">地圖元件載入失敗（或此裝置不支援 WebGL），請確認網路後重新整理。你仍可用右上方按鈕在 Google Maps 開啟路線。</p>';
-    $("#chips").innerHTML = "";
+    $("#stops").innerHTML = "";
     return;
   }
   if (!map) { $("#map").innerHTML = ""; initMap(); }
@@ -1066,10 +1144,18 @@ function openMap(i) {
 
     p.forEach((e, k) => {
       const el = document.createElement("div");
-      el.className = "pin"; el.textContent = k + 1;
+      el.className = "pin" + (e.noRoute ? " norte" : ""); el.dataset.tag = e.tag; el.textContent = k + 1;
       el.setAttribute("role", "button"); el.tabIndex = 0; el.title = e.name; el.setAttribute("aria-label", `${k + 1}. ${e.name}`);
-      const popup = new maplibregl.Popup({ offset: 18, closeButton: true, maxWidth: "240px" })
-        .setHTML(`<div class="pop"><b>${esc(e.name)}</b><br>${esc(e.t)}<br><a href="${searchUrl(e)}" target="_blank" rel="noopener">在 Google Maps 查看</a></div>`);
+      const desc = e.desc ? (e.desc.length > 64 ? e.desc.slice(0, 64) + "…" : e.desc) : "";
+      const popup = new maplibregl.Popup({ offset: 20, closeButton: true, maxWidth: "270px" })
+        .setHTML(`<div class="pop">
+          <div class="pop-top">${e.icon || ICONS[e.icon] ? `<img src="${ICONS[e.icon] || ICONS.fox}" alt="" width="42" height="42">` : ""}
+            <div><span class="pop-tag" data-tag="${esc(e.tag)}">${esc(e.tag)}</span><b>${k + 1}. ${esc(e.name)}</b><span class="pop-t">${esc(e.t)}</span></div></div>
+          ${e.note ? `<p class="pop-note">${esc(e.note)}</p>` : ""}
+          ${desc ? `<p class="pop-desc">${esc(desc)}</p>` : ""}
+          <div class="pop-act"><a href="${searchUrl(e)}" target="_blank" rel="noopener">在 Google Maps 查看</a>
+          <a class="go" href="https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(qOf(e))}" target="_blank" rel="noopener">導航到這裡</a></div></div>`);
+      popup.on("open", () => selectStop(k, false));
       const m = new maplibregl.Marker({ element: el, anchor: "center" }).setLngLat([e.pos[1], e.pos[0]]).setPopup(popup).addTo(map);
       el.addEventListener("keydown", ev => { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); m.togglePopup(); } });
       markers.push(m);
@@ -1079,8 +1165,10 @@ function openMap(i) {
     if (all.length === 1) map.jumpTo({ center: all[0], zoom: 15 });
     else if (all.length > 1) {
       const bnd = all.reduce((b, c) => b.extend(c), new maplibregl.LngLatBounds(all[0], all[0]));
-      map.fitBounds(bnd, { padding: 50, maxZoom: 15, duration: 0 });
+      fitState = { bnd, single: null };
+      map.fitBounds(bnd, { padding: 60, maxZoom: 15, duration: 0 });
     }
+    if (all.length === 1) fitState = { bnd: null, single: all[0] };
 
     const showLine = (coords, dashed, kind) => {
       if (token !== routeToken) return;
@@ -1091,10 +1179,41 @@ function openMap(i) {
     if (!straight) return;
     if (d.mode === "transit") { showLine(straight, true, "line"); return; }   // 電車日不套用開車路線
     showLine(straight, true, "line");   // 先顯示虛線，道路路線回來後再換掉
-    fetchRoadRoute(routable, token).then(road => { if (road && road.length > 1) showLine(road, false, "road"); });
+    fetchRoadRoute(routable, token).then(road => {
+      if (!road || !road.coords || road.coords.length < 2) return;
+      showLine(road.coords, false, "road");
+      if (token !== routeToken) return;
+      const km = road.dist / 1000, mins = Math.round(road.dur / 60);
+      const t = mins >= 60 ? `${Math.floor(mins / 60)} 小時 ${mins % 60} 分` : `${mins} 分`;
+      const el = $("#route-sum");
+      el.innerHTML = `<b>全程約 ${km >= 10 ? Math.round(km) : km.toFixed(1)} 公里</b><span>開車約 ${t}</span><small>不含冬季路況與停留</small>`;
+      el.hidden = false;
+    });
   });
 
-  $("#chips").innerHTML = p.map((e, k) => `<button class="chip" type="button" data-k="${k}"><b>${k + 1}</b>${esc(e.name)}</button>`).join("");
+  $("#stops").innerHTML = p.map((e, k) => `<button class="stop" type="button" role="listitem" data-k="${k}">
+    <span class="n" data-tag="${esc(e.tag)}">${k + 1}</span>
+    <span class="s-main"><b>${esc(e.name)}</b><small>${esc(e.t)} ・ ${esc(e.tag)}${e.noRoute ? " ・ 不計入路線" : ""}</small></span></button>`).join("");
+  $("#stops").scrollTop = 0;
+}
+
+let fitState = null;
+function fitAll() {
+  if (!map || !fitState) return;
+  markers.forEach(m => { const pp = m.getPopup(); if (pp && pp.isOpen()) pp.remove(); });
+  selectStop(-1, false);
+  if (fitState.bnd) map.fitBounds(fitState.bnd, { padding: 60, maxZoom: 15, duration: 600 });
+  else if (fitState.single) map.flyTo({ center: fitState.single, zoom: 15, duration: 600 });
+}
+function selectStop(k, fly) {
+  document.querySelectorAll("#stops .stop").forEach(x => x.classList.toggle("on", +x.dataset.k === k));
+  markers.forEach((m, i) => m.getElement().classList.toggle("sel", i === k));
+  const on = k >= 0 && $("#stops .stop.on");
+  if (on) on.scrollIntoView({ block: "nearest", inline: "nearest", behavior: "smooth" });
+  if (fly && k >= 0 && markers[k]) {
+    map.flyTo({ center: markers[k].getLngLat(), zoom: Math.max(map.getZoom(), 14), duration: 600 });
+    const pp = markers[k].getPopup(); if (pp && !pp.isOpen()) markers[k].togglePopup();
+  }
 }
 
 function closeMap() {
@@ -1107,12 +1226,11 @@ function closeMap() {
 
 $("#modal-close").addEventListener("click", closeMap);
 $("#modal").addEventListener("click", ev => { if (ev.target.id === "modal") closeMap(); });
-$("#chips").addEventListener("click", ev => {
-  const c = ev.target.closest(".chip"); if (!c || !map) return;
-  const m = markers[+c.dataset.k]; if (!m) return;
-  map.flyTo({ center: m.getLngLat(), zoom: Math.max(map.getZoom(), 14), duration: 600 });
-  const pp = m.getPopup(); if (pp && !pp.isOpen()) m.togglePopup();
+$("#stops").addEventListener("click", ev => {
+  const c = ev.target.closest(".stop"); if (!c || !map) return;
+  selectStop(+c.dataset.k, true);
 });
+$("#fit").addEventListener("click", fitAll);
 function toggleLayers(open) {
   const t = $("#layer-toggle"), o = $("#layer-opts");
   const v = open === undefined ? o.hidden : open;
