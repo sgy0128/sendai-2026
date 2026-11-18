@@ -227,9 +227,9 @@
     display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
   .qnav-fab { width: 62px; height: 62px; border-radius: 50%; border: 2px solid #2B3A55; cursor: pointer; display: grid; place-items: center; padding: 0;
     background: #fff; box-shadow: 0 8px 22px rgba(31,27,22,.28); transition: transform .2s, box-shadow .2s; }
-  .qnav-fab img { width: 42px; height: 42px; display: block; transition: transform .3s; }
+  .qnav-fab img { width: 42px; height: 42px; display: block; transition: transform .4s cubic-bezier(.34,1.35,.64,1); }
   .qnav-fab:active { transform: scale(.94); }
-  .qnav.open .qnav-fab img { transform: rotate(-12deg) scale(1.06); }
+  .qnav.open .qnav-fab img { transform: rotate(360deg) scale(1.06); }
   .qnav-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; align-items: flex-end;
     opacity: 0; transform: translateY(14px) scale(.96); pointer-events: none; visibility: hidden;
     transition: opacity .2s, transform .2s, visibility 0s .2s; }
@@ -563,9 +563,48 @@ footer span{background:none}
 
 .btn{align-items:center;line-height:1.2}
 .tools{align-items:center}
+
+/* ===== 開場動畫、地圖預載、轉場 ===== */
+.hero{transition:height .9s cubic-bezier(.65,0,.35,1)}
+.band,main,footer,.qnav{transition:opacity .8s ease .25s}
+body.intro{overflow:hidden;overscroll-behavior:none}
+body.intro .hero{height:100vh;height:100dvh}
+body.intro .band,body.intro main,body.intro footer,body.intro .qnav{opacity:0;pointer-events:none}
+body.intro .vtitle,body.intro .vsub,body.intro .hanko{opacity:0}
+body.intro .hero{transform:scale(1.12);transform-origin:40% 45%}
+body.play .hero{animation:kb 2.9s cubic-bezier(.45,.05,.35,1) both}
+@keyframes kb{from{transform:scale(1.12)}to{transform:scale(1)}}
+body.play .vtitle{animation:rise .9s .8s ease-out both}
+body.play .vsub{animation:rise .8s 1.3s ease-out both}
+body.play .hanko{animation:stamp .45s 1.9s cubic-bezier(.2,1.6,.4,1) both}
+@keyframes rise{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:none}}
+@keyframes stamp{from{opacity:0;transform:scale(2.2) rotate(-18deg)}to{opacity:.94;transform:rotate(-5deg)}}
+/* 換日、展開景點資訊 */
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+#panel.enter{animation:fadeUp .25s ease}
+.info[open] .info-in{animation:fadeUp .22s ease}
+/* 地圖視窗：平常隱藏但保有尺寸，地圖才能在背景預先載入 */
+.modal{display:flex;visibility:hidden;opacity:0;pointer-events:none;transition:opacity .2s,visibility 0s .2s}
+.modal.open{visibility:visible;opacity:1;pointer-events:auto;transition:opacity .2s}
+.sheet{transform:translateY(16px);transition:transform .28s ease}
+.modal.open .sheet{transform:none}
+@media (prefers-reduced-motion:reduce){
+  .hero,.band,main,footer,.qnav,.sheet,.modal{transition:none!important}
+  #panel.enter,.info[open] .info-in{animation:none}
+}
 </style>
+<noscript><style>body.intro .band,body.intro main,body.intro footer,body.intro .qnav,body.intro .vtitle,body.intro .vsub,body.intro .hanko{opacity:1!important;pointer-events:auto!important}body.intro{overflow:auto!important}body.intro .hero{height:clamp(420px,41.7vw,640px)!important}</style></noscript>
 </head>
-<body>
+<body class="intro">
+<script>
+/* 開場保險：減少動態效果、或 10 分鐘內在這個裝置看過，就直接略過；最久 9 秒一定會放行。
+   想改間隔，改 COOLDOWN_MIN（分鐘） */
+(function(){var COOLDOWN_MIN=10,b=document.body,skip=false;
+try{skip=matchMedia("(prefers-reduced-motion: reduce)").matches}catch(e){}
+try{var t=+localStorage.getItem("sendai2026:introAt"),d=Date.now()-t;if(t&&d>=0&&d<COOLDOWN_MIN*60000)skip=true}catch(e){}
+if(skip)b.classList.remove("intro");
+setTimeout(function(){b.classList.remove("intro")},9000)})();
+</script>
 
 <!-- ============ Hero ============ -->
 <header class="hero is-light">
@@ -965,6 +1004,7 @@ function renderPanel() {
 
 function select(i, focus) {
   cur = i; renderTabs(); renderPanel();
+  { const p = $("#panel"); p.classList.remove("enter"); void p.offsetWidth; p.classList.add("enter"); }
   if (focus) $("#tab-" + i).focus();
 }
 
@@ -1305,6 +1345,44 @@ document.querySelectorAll("#todo input").forEach((box, i) => {
   box.checked = store.get(key) === "1";
   box.addEventListener("change", () => store.set(key, box.checked ? "1" : "0"));
 });
+
+/* --- 地圖預載：開場結束、瀏覽器閒下來之後，在背景先把地圖建好（開場不會等它） --- */
+function preloadMap() {
+  if (map) return;
+  let ok = typeof maplibregl !== "undefined";
+  try { if (ok && !maplibregl.supported()) ok = false; } catch (_) {}
+  if (!ok) return;
+  try {
+    initMap();
+    const pts = pins(itinerary[cur]).filter(e => !e.far).map(e => [e.pos[1], e.pos[0]]);   // 先對準「今天」的範圍
+    if (pts.length > 1) map.fitBounds(pts.reduce((bb, c) => bb.extend(c), new maplibregl.LngLatBounds(pts[0], pts[0])), { padding: 60, maxZoom: 15, duration: 0 });
+  } catch (_) {}
+}
+const whenIdle = fn => "requestIdleCallback" in window ? requestIdleCallback(fn, { timeout: 3000 }) : setTimeout(fn, 1000);
+const onLoad = fn => document.readyState === "complete" ? fn() : addEventListener("load", fn, { once: true });
+
+/* --- 開場：整個首頁（照片、標題、印鑑）一起放大再縮回，播完就進網站 --- */
+(function intro() {
+  const b = document.body;
+  if (!b.classList.contains("intro")) { onLoad(() => whenIdle(preloadMap)); return; }   // 略過開場時，頁面載完也一樣預載地圖
+  let done = false;
+  const finish = skipped => {
+    if (done) return; done = true;
+    if (skipped) b.classList.remove("play");
+    b.classList.remove("intro");
+    store.set("sendai2026:introAt", String(Date.now()));   // 記下時間：10 分鐘內再開就不播
+    setTimeout(() => whenIdle(preloadMap), 1200);
+  };
+  ["pointerdown", "keydown"].forEach(ev => addEventListener(ev, () => finish(true), { once: true, passive: true }));   // 點一下就略過
+  const wait = ms => new Promise(r => setTimeout(r, ms));
+  const loaded = new Promise(r => onLoad(r));
+  const fonts = Promise.race([(document.fonts && document.fonts.ready) || Promise.resolve(), wait(1500)]);
+  Promise.race([loaded, wait(2500)]).then(() => fonts).then(() => {
+    if (done) return;
+    b.classList.add("play");
+    wait(3000).then(() => finish(false));
+  });
+})();
 
 /* 首頁背景圖是直接嵌在 HTML 裡的（slide 那一行的 background-image）。
    想換成別張照片：把 hero-xxx.jpg 放在同一層，將 url("data:image/jpeg;base64,...") 整段改成 url("hero-xxx.jpg") 即可。
