@@ -228,9 +228,9 @@
   /* 快速導覽（右下角） */
   html { scroll-behavior: smooth; touch-action: manipulation; }
   [id^="h-"] { scroll-margin-top: 16px; }
-  .qnav { position: fixed; right: 16px; bottom: calc(16px + env(safe-area-inset-bottom)); z-index: 900;
+  .qnav { pointer-events: none; position: fixed; right: 16px; bottom: calc(16px + env(safe-area-inset-bottom)); z-index: 900;
     display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
-  .qnav-fab { width: 62px; height: 62px; border-radius: 50%; border: 2px solid #2c426f; cursor: pointer; display: grid; place-items: center; padding: 0;
+  .qnav-fab { pointer-events: auto; width: 62px; height: 62px; border-radius: 50%; border: 2px solid #2c426f; cursor: pointer; display: grid; place-items: center; padding: 0;
     background: #fff; box-shadow: 0 8px 22px rgba(31,27,22,.28); transition: transform .2s, box-shadow .2s; }
   .qnav-fab img { width: 42px; height: 42px; display: block; transition: transform .6s cubic-bezier(.34,1.56,.64,1); }
   .qnav-fab:active { transform: scale(.94); }
