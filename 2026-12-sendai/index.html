@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light">
-<meta name="theme-color" content="#2B3A55">
+<meta name="theme-color" content="#2c426f">
 <meta name="description" content="仙台 冬の旅 2026（12/8–12/12）：每日行程、地圖路線、景點資訊與行前準備">
 <meta property="og:type" content="website">
 <meta property="og:title" content="仙台 冬の旅 2026">
@@ -30,7 +30,7 @@
     --paper:  #FBF8F0;
     --sumi:   #1F1B16;   /* 墨 */
     --sumi-2: #5A5348;
-    --ai:     #2B3A55;   /* 藍 */
+    --ai:     #2c426f;   /* 藍 */
     --ai-2:   #8FA3C4;
     --shu:    #B8322A;   /* 朱 */
     --kin-d:  #7A5A22;   /* 金（文字用深色） */
@@ -76,7 +76,7 @@
     transition: background .15s;
   }
   .btn small { font-size: .7rem; letter-spacing: .2em; opacity: .8; }
-  .btn:hover { background: #3A4D70; }
+  .btn:hover { background: #3a5385; }
   .btn:active { transform: translate(2px,2px); box-shadow: 1px 1px 0 rgba(31,27,22,.25); }
   .btn.ghost { background: var(--paper); color: var(--ai); border-color: var(--ai); box-shadow: none; }
   .btn.ghost[aria-pressed="true"] { background: var(--ai); color: var(--washi); }
@@ -230,7 +230,7 @@
   [id^="h-"] { scroll-margin-top: 16px; }
   .qnav { position: fixed; right: 16px; bottom: calc(16px + env(safe-area-inset-bottom)); z-index: 900;
     display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
-  .qnav-fab { width: 62px; height: 62px; border-radius: 50%; border: 2px solid #2B3A55; cursor: pointer; display: grid; place-items: center; padding: 0;
+  .qnav-fab { width: 62px; height: 62px; border-radius: 50%; border: 2px solid #2c426f; cursor: pointer; display: grid; place-items: center; padding: 0;
     background: #fff; box-shadow: 0 8px 22px rgba(31,27,22,.28); transition: transform .2s, box-shadow .2s; }
   .qnav-fab img { width: 42px; height: 42px; display: block; transition: transform .6s cubic-bezier(.34,1.56,.64,1); }
   .qnav-fab:active { transform: scale(.94); }
@@ -298,19 +298,19 @@
   .ev .note.warn { color: var(--shu); background: rgba(184,50,42,.07); border-left: 3px solid var(--shu); padding: 3px 10px; margin-top: 6px; }
   .ev .note.warn b { margin-right: .6em; letter-spacing: .15em; }
   .ev.move .body { padding-bottom: 14px; }
-  .day-sum { margin: 0 0 14px; padding: 10px 14px; border-radius: 14px; background: rgba(63,88,120,.07); color: var(--sumi); font-size: .95rem; line-height: 1.7; }
+  .day-sum { margin: 0 0 14px; padding: 10px 14px; border-radius: 14px; background: rgba(44,66,111,.07); color: var(--sumi); font-size: .95rem; line-height: 1.7; }
   .ev .body { position: relative; }
   .info { margin: 0; }
   .info[open] { margin-top: 8px; }
   .info summary { position: absolute; top: 6px; right: 8px; width: 46px; height: 46px; padding: 0; cursor: pointer; list-style: none;
-    display: grid; place-items: center; border-radius: 50%; background: rgba(255,255,255,.85); border: 1.5px solid rgba(63,88,120,.28);
+    display: grid; place-items: center; border-radius: 50%; background: rgba(255,255,255,.85); border: 1.5px solid rgba(44,66,111,.28);
     box-shadow: 0 2px 6px rgba(31,27,22,.10); user-select: none; transition: transform .15s, background .15s; }
   @media (hover: hover) { .info summary:hover { transform: scale(1.06); } }
   .info summary::-webkit-details-marker { display: none; }
   .info summary img { width: 34px; height: 34px; display: block; }
   .info[open] summary { background: #fff; border-color: var(--shu); box-shadow: 0 0 0 3px rgba(232,135,58,.25); }
   .ev.has-info .body > div:first-child, .ev.has-info .body > .note { margin-right: 54px; }
-  .info-in { margin-top: 8px; padding: 10px 12px; border-radius: 12px; background: rgba(255,255,255,.7); border: 1px solid rgba(63,88,120,.15); font-size: .9rem; line-height: 1.7; }
+  .info-in { margin-top: 8px; padding: 10px 12px; border-radius: 12px; background: rgba(255,255,255,.7); border: 1px solid rgba(44,66,111,.15); font-size: .9rem; line-height: 1.7; }
   .info-in .desc { margin: 0 0 6px; }
   .info-in .tips { margin: 0 0 6px; padding-left: 1.2em; color: var(--sumi-2); }
   .info-in .tips { list-style: disc; }
@@ -356,7 +356,7 @@
   .tools .grow { flex: 1; }
   .layers { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
   .layer-opts[hidden] { display: none; }
-  .layer-toggle { width: 44px; padding: 0 !important; display: inline-flex; align-items: center; justify-content: center; }
+  .layer-toggle { display: inline-flex; align-items: center; justify-content: center; }
   .layer-toggle[aria-expanded="true"] { background: var(--ai); color: var(--washi); }
   .layer-opts { display: flex; gap: 8px; flex-wrap: wrap; animation: lay-in .18s ease-out; }
   @keyframes lay-in { from { opacity: 0; transform: translateX(-6px); } to { opacity: 1; transform: none; } }
@@ -393,7 +393,7 @@
   }
 
   /* ---------- 柔化：圓角・淡影・柔和線條 ---------- */
-  :root { --r: 18px; --edge: rgba(31,27,22,.30); --soft: 0 8px 22px rgba(43,58,85,.10); }
+  :root { --r: 18px; --edge: rgba(31,27,22,.30); --soft: 0 8px 22px rgba(44,66,111,.10); }
 
   /* 卡片：圓角、淡淡的影子，內框線變淡 */
   .card { border-radius: var(--r); border: 1px solid var(--edge); outline: 1px solid rgba(31,27,22,.12); outline-offset: -6px; box-shadow: var(--soft); }
@@ -401,9 +401,9 @@
   .ticket .stub { border-left-color: rgba(31,27,22,.35); }
 
   /* 按鈕、標籤：膠囊形 */
-  .btn { border-radius: 999px; box-shadow: 0 4px 12px rgba(43,58,85,.22); }
-  .btn:active { transform: translateY(1px); box-shadow: 0 2px 6px rgba(43,58,85,.2); }
-  .btn.ghost { box-shadow: none; border-color: rgba(43,58,85,.55); }
+  .btn { border-radius: 999px; box-shadow: 0 4px 12px rgba(44,66,111,.22); }
+  .btn:active { transform: translateY(1px); box-shadow: 0 2px 6px rgba(44,66,111,.2); }
+  .btn.ghost { box-shadow: none; border-color: rgba(44,66,111,.55); }
   .tag { border-radius: 999px; padding: 0 9px; background: rgba(255,255,255,.5); border-color: rgba(31,27,22,.25);
          background: color-mix(in srgb, currentColor 9%, transparent); border-color: color-mix(in srgb, currentColor 45%, transparent); }
   .tag.t-航班 { background: var(--ai); color: var(--washi); border-color: var(--ai); }
@@ -415,8 +415,8 @@
 
   /* 日期頁籤 */
   .tabs { gap: 10px; padding: 6px 4px 14px; }
-  .tab { border-radius: 18px; padding-top: 15px; border: 1px solid var(--edge); box-shadow: 0 3px 10px rgba(43,58,85,.08); transition: background .15s, box-shadow .15s; }
-  .tab[aria-selected="true"] { box-shadow: 0 8px 18px rgba(43,58,85,.28); }
+  .tab { border-radius: 18px; padding-top: 15px; border: 1px solid var(--edge); box-shadow: 0 3px 10px rgba(44,66,111,.08); transition: background .15s, box-shadow .15s; }
+  .tab[aria-selected="true"] { box-shadow: 0 8px 18px rgba(44,66,111,.28); }
   .tab[aria-selected="true"]::before { left: 50%; right: auto; top: 6px; width: 22px; height: 3px; margin-left: -11px; border-radius: 3px; background: #E8C170; }
 
   /* 每日行程：每個行程變成柔和的小卡，連線與圓點也變輕 */
@@ -467,14 +467,14 @@
   .hero.is-light .vtitle, .hero.is-light .vsub { color: #fff; text-shadow: 0 2px 18px rgba(0,0,0,.55), 0 0 4px rgba(0,0,0,.35); }
   @media (max-width: 640px) { .slide { background-position: var(--posM, var(--pos, 50% 100%)); } }
 
-:root{--washi:#F4F7FA;--paper:#FFFFFF;--ai:#3F5878;--ai-2:#9DB2CB;--shu:#E8873A;--sumi:#26303D;--sumi-2:#5F6B7A;--kin-d:#9A6A2A;--line:rgba(63,88,120,.16);--edge:rgba(63,88,120,.14)}
-.card{border:1px solid rgba(63,88,120,.12);outline:none;box-shadow:0 10px 28px rgba(63,88,120,.10)}
+:root{--washi:#F4F7FA;--paper:#FFFFFF;--ai:#2c426f;--ai-2:#9DB2CB;--shu:#E8873A;--sumi:#26303D;--sumi-2:#5F6B7A;--kin-d:#9A6A2A;--line:rgba(44,66,111,.16);--edge:rgba(44,66,111,.14)}
+.card{border:1px solid rgba(44,66,111,.12);outline:none;box-shadow:0 10px 28px rgba(44,66,111,.10)}
 .hero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:90px;background:linear-gradient(180deg,rgba(244,247,250,0),#DCE6F0);z-index:1;pointer-events:none}
 .band{background:linear-gradient(180deg,#DCE6F0,#F4F7FA);border:0;border-radius:0;padding:8px 16px 26px}
-.plate{background:rgba(255,255,255,.9);color:var(--ai);border:1px solid rgba(63,88,120,.18);outline:none;box-shadow:0 8px 22px rgba(63,88,120,.14);border-radius:999px;padding:8px 34px 10px}
+.plate{background:rgba(255,255,255,.9);color:var(--ai);border:1px solid rgba(44,66,111,.18);outline:none;box-shadow:0 8px 22px rgba(44,66,111,.14);border-radius:999px;padding:8px 34px 10px}
 .plate .count b{color:var(--shu)}
 .hanko{background:#C9482F;box-shadow:inset 0 0 0 2px #C9482F,inset 0 0 0 3.5px #fff}
-.sec-h{border-bottom-color:rgba(63,88,120,.14)}
+.sec-h{border-bottom-color:rgba(44,66,111,.14)}
 .sec-h::after{background:var(--shu)}
 .ev .body{background:rgba(232,239,246,.55)}
 .tip{background:rgba(157,178,203,.2)}
@@ -514,7 +514,7 @@ footer span{background:none}
 .sheet-sub { margin: 3px 0 0; font-size: .85rem; color: var(--sumi-2); line-height: 1.4; }
 .map-body { flex: 1; display: flex; gap: 12px; min-height: 0; margin-top: 12px; }
 .map-col { position: relative; flex: 1; min-width: 0; display: flex; }
-.map-col #map { flex: 1; margin-top: 0; min-height: 220px; box-shadow: inset 0 0 0 1px rgba(63,88,120,.1); }
+.map-col #map { flex: 1; margin-top: 0; min-height: 220px; box-shadow: inset 0 0 0 1px rgba(44,66,111,.1); }
 .route-sum { position: absolute; left: 10px; bottom: 28px; z-index: 2; display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px;
   max-width: calc(100% - 20px); padding: 8px 14px; border-radius: 14px; background: rgba(255,255,255,.94); border: 1px solid var(--edge);
   box-shadow: 0 4px 14px rgba(31,27,22,.18); font-size: .85rem; color: var(--sumi); }
@@ -535,7 +535,7 @@ footer span{background:none}
 .stop .s-main b { font-size: .92rem; line-height: 1.3; }
 .stop .s-main small { font-size: .74rem; color: var(--sumi-2); margin-top: 1px; }
 /* 依類別上色（圖釘、清單編號、泡泡標籤共用） */
-.pin[data-tag="景點"], .stop .n[data-tag="景點"], .pop-tag[data-tag="景點"] { --pc: #3F5878; }
+.pin[data-tag="景點"], .stop .n[data-tag="景點"], .pop-tag[data-tag="景點"] { --pc: #2c426f; }
 .pin[data-tag="美食"], .stop .n[data-tag="美食"], .pop-tag[data-tag="美食"] { --pc: #D2562F; }
 .pin[data-tag="住宿"], .stop .n[data-tag="住宿"], .pop-tag[data-tag="住宿"] { --pc: #5B7F6A; }
 .pin[data-tag="購物"], .stop .n[data-tag="購物"], .pop-tag[data-tag="購物"] { --pc: #B07A2A; }
@@ -583,6 +583,37 @@ footer span{background:none}
 
 .btn{align-items:center;line-height:1.2}
 .tools{align-items:center}
+  /* 向下拉開的選單（地圖樣式、交通方式共用） */
+  .dd { position: relative; --nv: #2c426f; }   /* 選單專用深藍 */
+  .dd .dd-list { position: absolute; top: calc(100% + 8px); left: 0; z-index: 30;
+    display: flex; flex-direction: column; gap: 10px; min-width: 236px; max-width: calc(100vw - 32px); padding: 14px;
+    background: var(--paper); border: 1px solid var(--edge); border-radius: 22px;
+    box-shadow: 0 14px 34px rgba(31,27,22,.28); animation: dd-in .16s ease-out; }
+  @media (max-width: 560px) { .modes .dd-list { left: auto; right: 0; } }   /* 手機上靠右對齊，避免超出螢幕 */
+  .dd .dd-list[hidden] { display: none; }
+  /* 選項：膠囊按鈕，圖示｜分隔線｜文字 */
+  .dd .dd-list .btn.opt { width: 100%; min-height: 52px; padding: 0 22px 0 10px; justify-content: flex-start; gap: 0;
+    border-radius: 999px; font-size: 1.02rem; letter-spacing: .1em; white-space: nowrap;
+    background: #F3F5FA; color: var(--nv); border: 2px solid rgba(44,66,111,.32); box-shadow: none; }
+  .dd .dd-list .btn.opt:hover { background: #E9EDF6; }
+  .dd .dd-list .btn.opt[aria-pressed="true"] { background: var(--nv); color: var(--washi); border-color: var(--nv); box-shadow: 0 6px 14px rgba(44,66,111,.32); }
+  .opt-ico { flex: none; width: 46px; height: 28px; display: flex; align-items: center; justify-content: center; }
+  .opt-ico .tico { width: 100%; height: 100%; }
+  .opt-ico .ico { width: 22px; height: 22px; }
+  .opt-sep { flex: none; width: 1.5px; height: 26px; margin: 0 14px 0 10px; background: currentColor; opacity: .3; }
+  .opt-label { flex: 1; text-align: left; }
+  .tico { flex: none; display: block; fill: currentColor; stroke: none; }
+  @keyframes dd-in { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+  .ico { width: 18px; height: 18px; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  #layer-ico { display: inline-flex; }
+  #mode-ico { display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 17px; }
+  #mode-ico .tico { width: 100%; height: 100%; }
+  .dd-title { margin: 0 0 2px; padding: 0 4px 9px; font-size: 1rem; font-weight: 600; letter-spacing: .16em; color: var(--nv); border-bottom: 1px solid rgba(44,66,111,.22); }
+  .dd-chev { flex: none; transition: transform .18s; }
+  [aria-expanded="true"] > .dd-chev { transform: rotate(180deg); }
+  .dd > .btn.ghost { color: var(--nv); border-color: rgba(44,66,111,.55); }
+  .dd > .btn.ghost[aria-expanded="true"] { background: var(--nv); border-color: var(--nv); color: var(--washi); }
+  @media (prefers-reduced-motion: reduce) { .dd .dd-list { animation: none; } .dd-chev { transition: none; } }
 </style>
 </head>
 <body>
@@ -753,18 +784,32 @@ footer span{background:none}
       <button class="btn ghost" id="modal-close" type="button">關閉</button>
     </div>
     <div class="tools">
-      <div class="layers" id="layers">
-        <button class="btn ghost layer-toggle" id="layer-toggle" type="button" aria-expanded="false" aria-controls="layer-opts" aria-label="切換地圖樣式" title="切換地圖樣式">
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M12 3 3 8l9 5 9-5-9-5z"/><path d="m3 12.5 9 5 9-5"/><path d="m3 17 9 5 9-5"/></svg>
+      <div class="layers dd" id="layers">
+        <button class="btn ghost layer-toggle" id="layer-toggle" type="button" aria-expanded="false" aria-haspopup="true" aria-controls="layer-opts" title="切換地圖樣式">
+          <span id="layer-ico" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3s6 6.2 6 10.5a6 6 0 0 1-12 0C6 9.2 12 3 12 3z"/></svg></span><span id="layer-label">彩色地圖</span>
+          <svg class="dd-chev" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
         </button>
-        <div class="layer-opts" id="layer-opts" hidden>
-          <button class="btn ghost" type="button" data-base="color" aria-pressed="true">彩色地圖</button>
-          <button class="btn ghost" type="button" data-base="std" aria-pressed="false">標準地圖</button>
-          <button class="btn ghost" type="button" data-base="pale" aria-pressed="false">淡色地圖</button>
+        <div class="layer-opts dd-list" id="layer-opts" hidden>
+          <p class="dd-title">地圖樣式</p>
+          <button class="btn ghost opt" type="button" data-base="color" aria-pressed="true"><span class="opt-ico"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3s6 6.2 6 10.5a6 6 0 0 1-12 0C6 9.2 12 3 12 3z"/></svg></span><span class="opt-sep"></span><span class="opt-label">彩色地圖</span></button>
+          <button class="btn ghost opt" type="button" data-base="std" aria-pressed="false"><span class="opt-ico"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4 3 6.5V20l6-2.5 6 2.5 6-2.5V4l-6 2.5z"/><path d="M9 4v13.5M15 6.5V20"/></svg></span><span class="opt-sep"></span><span class="opt-label">標準地圖</span></button>
+          <button class="btn ghost opt" type="button" data-base="pale" aria-pressed="false"><span class="opt-ico"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 4v16"/></svg></span><span class="opt-sep"></span><span class="opt-label">淡色地圖</span></button>
+        </div>
+      </div>
+      <div class="modes dd" id="modes">
+        <button class="btn ghost" id="mode-toggle" type="button" aria-expanded="false" aria-haspopup="true" aria-controls="mode-opts" title="切換交通方式">
+          <span id="mode-ico" aria-hidden="true"><svg class="tico" viewBox="174 195 163 120" aria-hidden="true" focusable="false"><path fill="currentColor" fill-rule="evenodd" d="M 176 236 176 240 177 242 181 244 183 244 186 246 186 247 184 248 180 253 178 257 178 260 177 261 177 306 178 307 178 309 182 313 203 313 207 309 207 295 208 294 303 294 304 295 304 308 308 313 329 313 331 311 332 311 333 309 333 307 334 306 334 260 331 253 328 250 328 249 325 247 325 246 328 244 330 244 334 242 335 240 335 237 333 234 317 234 313 229 313 227 302 206 297 201 291 198 288 198 287 197 225 197 224 198 221 198 220 199 216 200 209 206 195 234 178 234 Z M 189 266 190 265 191 261 195 258 207 258 208 259 213 259 215 260 219 264 220 266 220 269 218 273 213 276 197 277 193 275 191 273 Z M 322 266 321 272 317 276 315 276 314 277 305 277 304 276 298 276 292 271 292 264 295 261 299 259 303 259 304 258 311 258 312 257 313 258 316 258 320 261 321 265 Z M 204 242 208 235 208 233 217 215 222 210 226 208 285 208 286 209 288 209 290 211 291 211 295 216 295 218 307 241 306 243 303 243 302 244 210 244 209 243 205 243 Z"/></svg></span><span id="mode-label">開車</span>
+          <svg class="dd-chev" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="dd-list" id="mode-opts" hidden>
+          <p class="dd-title">交通方式</p>
+          <button class="btn ghost opt" type="button" data-mode="driving" aria-pressed="true"><span class="opt-ico"><svg class="tico" viewBox="174 195 163 120" aria-hidden="true" focusable="false"><path fill="currentColor" fill-rule="evenodd" d="M 176 236 176 240 177 242 181 244 183 244 186 246 186 247 184 248 180 253 178 257 178 260 177 261 177 306 178 307 178 309 182 313 203 313 207 309 207 295 208 294 303 294 304 295 304 308 308 313 329 313 331 311 332 311 333 309 333 307 334 306 334 260 331 253 328 250 328 249 325 247 325 246 328 244 330 244 334 242 335 240 335 237 333 234 317 234 313 229 313 227 302 206 297 201 291 198 288 198 287 197 225 197 224 198 221 198 220 199 216 200 209 206 195 234 178 234 Z M 189 266 190 265 191 261 195 258 207 258 208 259 213 259 215 260 219 264 220 266 220 269 218 273 213 276 197 277 193 275 191 273 Z M 322 266 321 272 317 276 315 276 314 277 305 277 304 276 298 276 292 271 292 264 295 261 299 259 303 259 304 258 311 258 312 257 313 258 316 258 320 261 321 265 Z M 204 242 208 235 208 233 217 215 222 210 226 208 285 208 286 209 288 209 290 211 291 211 295 216 295 218 307 241 306 243 303 243 302 244 210 244 209 243 205 243 Z"/></svg></span><span class="opt-sep"></span><span class="opt-label">開車</span></button>
+          <button class="btn ghost opt" type="button" data-mode="walking" aria-pressed="false"><span class="opt-ico"><svg class="tico" viewBox="199 169 112 172" aria-hidden="true" focusable="false"><path fill="currentColor" fill-rule="evenodd" d="M 245 211 232 217 230 219 216 226 210 233 208 244 207 245 206 251 205 252 205 255 204 256 204 260 205 262 210 266 213 266 218 263 221 256 221 253 222 252 222 249 223 248 225 240 227 238 237 233 239 233 240 234 239 235 239 238 238 239 238 242 237 243 237 246 236 247 236 251 235 252 235 256 234 257 234 260 233 261 233 264 232 265 232 269 228 277 226 284 220 294 217 297 215 301 212 304 212 305 209 308 209 309 203 317 201 321 201 325 202 326 202 328 207 332 211 333 212 332 216 331 219 328 219 327 222 324 229 313 240 299 244 291 246 284 248 283 266 300 267 306 268 307 268 311 269 312 269 316 270 317 270 320 271 321 272 330 273 331 274 335 279 339 285 339 289 337 289 336 291 334 291 326 290 325 290 322 289 321 288 312 287 311 287 308 286 307 286 304 285 303 285 299 284 298 284 294 283 293 283 291 281 289 281 288 261 269 261 267 262 266 262 262 263 261 263 258 264 257 264 253 265 252 265 248 266 247 266 245 268 244 277 254 284 256 298 263 304 263 306 261 307 261 309 255 308 254 308 252 304 248 302 248 293 243 291 243 287 241 273 224 270 219 264 213 257 210 249 210 248 211 Z M 261 171 260 172 256 173 251 178 248 185 248 193 249 194 250 198 258 205 260 205 261 206 271 206 277 203 281 199 283 195 283 192 284 191 284 186 283 185 283 182 281 178 276 173 272 172 271 171 Z"/></svg></span><span class="opt-sep"></span><span class="opt-label">步行</span></button>
+          <button class="btn ghost opt" type="button" data-mode="transit" aria-pressed="false"><span class="opt-ico"><svg class="tico" viewBox="170 204 194 103" aria-hidden="true" focusable="false"><path fill="currentColor" fill-rule="evenodd" d="M 172 264 193 264 194 265 204 265 207 263 207 258 204 256 180 256 179 257 173 257 175 258 174 259 174 262 175 263 174 264 Z M 207 234 205 232 183 233 182 234 184 235 183 236 184 237 183 238 184 240 182 241 205 241 207 239 Z M 222 231 222 252 226 255 274 255 275 254 275 251 267 243 266 243 258 235 250 230 244 229 243 228 230 228 229 229 224 229 Z M 203 212 205 211 207 214 206 215 204 215 222 214 223 213 248 213 249 214 255 215 267 221 273 226 274 226 298 249 305 253 308 253 309 254 338 254 340 256 341 256 350 265 354 272 354 276 349 280 343 280 342 281 218 281 217 280 213 280 212 281 210 281 209 280 208 281 200 281 202 281 203 282 202 283 200 283 200 284 198 286 198 288 197 289 197 291 198 292 197 293 191 293 197 293 198 294 204 294 205 295 212 295 213 296 220 296 221 297 229 297 230 298 236 298 237 299 255 300 256 301 263 301 264 302 274 302 275 303 284 303 285 304 304 304 305 305 313 305 314 304 328 304 329 303 335 303 336 302 342 301 353 295 358 290 361 284 361 282 362 281 362 272 358 263 354 259 354 258 347 251 346 251 339 244 338 244 328 235 327 235 314 225 304 220 302 218 300 218 292 214 290 214 289 213 287 213 280 210 277 210 276 209 264 208 263 207 254 207 253 206 233 206 232 207 221 207 220 208 210 209 Z M 203 282 204 281 205 282 204 283 Z M 305 245 306 244 307 245 306 246 Z M 303 244 304 243 306 244 305 245 Z M 302 243 303 242 304 243 303 244 Z M 301 242 302 241 303 242 302 243 Z M 300 241 301 240 302 241 301 242 Z M 285 228 286 227 287 228 286 229 Z M 270 217 271 216 273 216 274 217 278 217 279 218 287 220 292 223 291 224 289 224 289 225 287 227 284 228 Z"/></svg></span><span class="opt-sep"></span><span class="opt-label">大眾運輸</span></button>
         </div>
       </div>
       <span class="grow"></span>
-      <a class="btn shu" id="gmaps" target="_blank" rel="noopener">在 Google Maps 開啟當日路線</a>
+      <a class="btn shu" id="gmaps" target="_blank" rel="noopener" title="在 Google Maps 開啟當日路線"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-6.5-5.7-6.5-11a6.5 6.5 0 0 1 13 0c0 5.3-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/></svg><span>開啟 Google Maps</span></a>
     </div>
     <div class="seg" id="seg">
       <span class="seg-l">路段</span>
@@ -1002,18 +1047,25 @@ $("#panel").addEventListener("click", ev => {
 
 renderTabs(); renderPanel();
 
+/* --- 交通方式：gm 是 Google Maps 的 travelmode；api 是畫路線用的路徑服務（大眾運輸沒有免費服務，只畫直線） --- */
+const MODES = {
+  driving: { label: "開車",     verb: "開車", gm: "driving", api: "https://router.project-osrm.org/route/v1/driving/",                 color: "#2B5FB5", kind: "road", note: "不含冬季路況與停留" },
+  walking: { label: "步行",     verb: "步行", gm: "walking", api: "https://routing.openstreetmap.de/routed-foot/route/v1/driving/",    color: "#2F8F5B", kind: "walk", note: "不含積雪路面與停留，下雪時會走得比較慢" },
+  transit: { label: "大眾運輸", verb: "",     gm: "transit", api: null,                                                                  color: null,      kind: "line" }
+};
+
 /* --- Google Maps 連結 --- */
 const qOf = e => e.q || e.name;
 const searchUrl = e => "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(qOf(e));
-function routeUrl(d, list) {
+function routeUrl(d, list, mode) {
   const p = list || pins(d).filter(e => !e.noRoute);
   if (p.length === 0) return "#";
   if (p.length === 1) return searchUrl(p[0]);
-  let u = "https://www.google.com/maps/dir/?api=1&travelmode=" + (d.mode || "driving") +
+  let u = "https://www.google.com/maps/dir/?api=1&travelmode=" + (MODES[mode] ? MODES[mode].gm : (d.mode || "driving")) +
           "&origin=" + encodeURIComponent(qOf(p[0])) +
           "&destination=" + encodeURIComponent(qOf(p[p.length - 1]));
   const mid = p.slice(1, -1).map(qOf);
-  if (mid.length) u += "&waypoints=" + encodeURIComponent(mid.join("|"));
+  if (mid.length && mode !== "transit") u += "&waypoints=" + encodeURIComponent(mid.join("|"));
   return u;
 }
 
@@ -1037,6 +1089,8 @@ function setLegal(kind) {
   const el = $("#legal"); if (!el) return;
   el.textContent = LEGAL_BASE + (kind === "road"
     ? "；藍色實線為實際道路路線（OSRM 估算，僅供參考，實際請以導航為準）。"
+    : kind === "walk"
+      ? "；綠色實線為步行路線（OpenStreetMap／FOSSGIS 估算，僅供參考，實際請以導航為準）。"
     : kind === "line"
       ? "；虛線為直線示意、不是實際路線。"
       : "。");
@@ -1055,13 +1109,15 @@ function drawRoute() {
   }
   map.addLayer({ id: "route-line", type: "line", source: "route", layout: { "line-join": "round", "line-cap": routeData.dashed ? "butt" : "round" },
     paint: routeData.dashed
-      ? { "line-color": "#2B3A55", "line-width": 3, "line-opacity": .8, "line-dasharray": [2, 2] }
-      : { "line-color": "#2B5FB5", "line-width": 5, "line-opacity": .9 } });
+      ? { "line-color": "#2c426f", "line-width": 3, "line-opacity": .8, "line-dasharray": [2, 2] }
+      : { "line-color": routeData.color || "#2B5FB5", "line-width": 5, "line-opacity": .9 } });
 }
 
 function setBase(key) {
   if (!map || !STYLES[key]) return;
   document.querySelectorAll("[data-base]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.base === key)));
+  { const on = document.querySelector(`[data-base="${key}"]`);
+    if (on) { $("#layer-label").textContent = on.textContent.trim(); const ic = on.querySelector(".ico"); $("#layer-ico").innerHTML = ic ? ic.outerHTML : ""; } }
   store.set("sendai2026:base2", key);
   if (baseKey === key) return;
   baseKey = key;
@@ -1082,12 +1138,12 @@ function initMap() {
 }
 
 /* 向 OSRM 要實際道路路線；失敗就回傳 null，改畫直線 */
-async function fetchRoadRoute(coords, token) {
+async function fetchRoadRoute(coords, token, M) {
   const ctl = new AbortController();
   const timer = setTimeout(() => ctl.abort(), 9000);
   try {
     const path = coords.map(c => c[0].toFixed(5) + "," + c[1].toFixed(5)).join(";");
-    const r = await fetch("https://router.project-osrm.org/route/v1/driving/" + path + "?overview=full&geometries=geojson", { signal: ctl.signal });
+    const r = await fetch(M.api + path + "?overview=full&geometries=geojson", { signal: ctl.signal });
     if (!r.ok) return null;
     const j = await r.json();
     if (token !== routeToken) return null;
@@ -1105,7 +1161,8 @@ function openMap(i) {
     $("#modal-kicker").textContent = `DAY ${d.day} ・ ${m}月${dd}日（${d.wd}）`;
     $("#modal-sub").textContent = d.title + (d.hotel ? "　宿｜" + d.hotel : ""); }
   $("#route-sum").hidden = true;
-  $("#gmaps").href = routeUrl(d);
+  curMode = MODES[d.mode] ? d.mode : "driving"; syncModes();   // 預設用當日的 mode，可在地圖上切換
+  $("#gmaps").href = routeUrl(d, null, curMode);
   $("#modal").classList.add("open");
   document.body.style.overflow = "hidden";
   $("#modal-close").focus();
@@ -1157,7 +1214,7 @@ function openMap(i) {
   $("#stops").scrollTop = 0;
 }
 
-let curDay = 0, curPins = [], seg = null, pickStep = 0, fitState = null;   // pickStep：0＝下一次點清單設「起點」，1＝設「終點」
+let curMode = "driving", curDay = 0, curPins = [], seg = null, pickStep = 0, fitState = null;   // pickStep：0＝下一次點清單設「起點」，1＝設「終點」
 /* 畫路線：seg 為 null 時畫整天，否則只畫選定的兩個地點之間 */
 function applyRoute(fit) {
   if (!map) return;
@@ -1166,8 +1223,8 @@ function applyRoute(fit) {
   const same = !!seg && seg[0] === seg[1];   // 起點＝終點：不畫路徑，只標出那個地點
   const list = seg ? (same ? [curPins[seg[0]]] : [curPins[seg[0]], curPins[seg[1]]]) : full;
   markers.forEach((m, i) => m.getElement().classList.toggle("dim", !!seg && i !== seg[0] && i !== seg[1]));
-  $("#gmaps").href = routeUrl(d, list);
-  $("#gmaps").textContent = seg ? (same ? "在 Google Maps 查看此地點" : "在 Google Maps 開啟此路段") : "在 Google Maps 開啟當日路線";
+  $("#gmaps").href = routeUrl(d, list, curMode);
+  $("#gmaps").title = seg ? (same ? "在 Google Maps 查看此地點" : "在 Google Maps 開啟此路段") : "在 Google Maps 開啟當日路線";
   $("#seg-all").hidden = !seg;
   $("#route-sum").hidden = true;
   if (same) { $("#route-sum").innerHTML = "<b>起點與終點相同</b><small>不顯示路徑</small>"; $("#route-sum").hidden = false; }
@@ -1183,22 +1240,28 @@ function applyRoute(fit) {
   }
   const coords = list.map(e => [e.pos[1], e.pos[0]]);
   if (coords.length < 2) return;
-  const showLine = (c, dashed, kind) => {
+  const showLine = (c, dashed, kind, color) => {
     if (token !== routeToken) return;
-    routeData = { coords: c, dashed };
+    routeData = { coords: c, dashed, color };
     const go = () => { if (token === routeToken) { drawRoute(); setLegal(kind); } };
     if (map.isStyleLoaded()) go(); else map.once("idle", go);
   };
-  showLine(coords, true, "line");   // 先顯示虛線，道路路線回來後再換掉
-  if (d.mode === "transit") return;   // 電車日不套用開車路線
-  fetchRoadRoute(coords, token).then(road => {
-    if (!road || !road.coords || road.coords.length < 2) return;
-    showLine(road.coords, false, "road");
+  showLine(coords, true, "line");   // 先顯示虛線，路線回來後再換掉
+  const M = MODES[curMode] || MODES.driving, el = $("#route-sum");
+  if (!M.api) {   // 大眾運輸：沒有免費的路線服務，只畫直線示意，班次與轉乘交給 Google Maps
+    el.innerHTML = `<b>${M.label}</b><span>虛線為直線示意</span><small>${list.length > 2 ? "Google Maps 的大眾運輸只能查起訖兩點，請用上方「路段」逐段查詢" : "實際班次與轉乘請按「開啟 Google Maps」查詢"}</small>`;
+    el.hidden = false;
+    return;
+  }
+  fetchRoadRoute(coords, token, M).then(road => {
     if (token !== routeToken) return;
+    if (!road || !road.coords || road.coords.length < 2) {
+      el.innerHTML = "<b>暫時無法取得路線</b><small>虛線為直線示意</small>"; el.hidden = false; return;
+    }
+    showLine(road.coords, false, M.kind, M.color);
     const km = road.dist / 1000, mins = Math.round(road.dur / 60);
     const t = mins >= 60 ? `${Math.floor(mins / 60)} 小時 ${mins % 60} 分` : `${mins} 分`;
-    const el = $("#route-sum");
-    el.innerHTML = `<b>${seg ? "此路段" : "全程"}約 ${km >= 10 ? Math.round(km) : km.toFixed(1)} 公里</b><span>開車約 ${t}</span><small>不含冬季路況與停留</small>`;
+    el.innerHTML = `<b>${seg ? "此路段" : "全程"}約 ${km >= 10 ? Math.round(km) : km.toFixed(1)} 公里</b><span>${M.verb}約 ${t}</span><small>${M.note}</small>`;
     el.hidden = false;
   });
 }
@@ -1236,6 +1299,7 @@ function selectStop(k, fly) {
 
 function closeMap() {
   routeToken++;
+  setDD("layer", false); setDD("mode", false);
   markers.forEach(m => { const pp = m.getPopup(); if (pp && pp.isOpen()) pp.remove(); });
   $("#modal").classList.remove("open");
   document.body.style.overflow = "";
@@ -1260,18 +1324,40 @@ $("#stops").addEventListener("click", ev => {
   }
 });
 $("#fit").addEventListener("click", fitAll);
-function toggleLayers(open) {
-  const t = $("#layer-toggle"), o = $("#layer-opts");
+function syncModes() {
+  document.querySelectorAll("[data-mode]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.mode === curMode)));
+  $("#mode-label").textContent = (MODES[curMode] || MODES.driving).label;
+  const on = document.querySelector(`[data-mode="${curMode}"] .tico`);
+  $("#mode-ico").innerHTML = on ? on.outerHTML : "";
+}
+document.querySelectorAll("[data-mode]").forEach(b => b.addEventListener("click", () => {
+  setDD("mode", false);
+  if (b.dataset.mode === curMode) return;
+  curMode = b.dataset.mode; syncModes();
+  if (map) applyRoute(false);
+}));
+/* 向下拉開的選單：id 為 "layer"（地圖樣式）或 "mode"（交通方式），一次只開一個 */
+function setDD(id, open) {
+  const t = $("#" + id + "-toggle"), o = $("#" + id + "-opts");
   const v = open === undefined ? o.hidden : open;
   o.hidden = !v; t.setAttribute("aria-expanded", String(v));
+  if (v) ["layer", "mode"].filter(x => x !== id).forEach(x => setDD(x, false));
 }
-$("#layer-toggle").addEventListener("click", () => toggleLayers());
+const toggleLayers = open => setDD("layer", open);
+$("#layer-toggle").addEventListener("click", () => setDD("layer"));
+$("#mode-toggle").addEventListener("click", () => setDD("mode"));
 document.querySelectorAll("[data-base]").forEach(b => b.addEventListener("click", () => { setBase(b.dataset.base); toggleLayers(false); }));
-document.addEventListener("click", ev => { if (!ev.target.closest("#layers")) toggleLayers(false); });
+document.addEventListener("click", ev => {
+  if (!ev.target.closest("#layers")) setDD("layer", false);
+  if (!ev.target.closest("#modes")) setDD("mode", false);
+});
 document.addEventListener("keydown", ev => {
   const open = $("#modal").classList.contains("open");
   if (!open) return;
-  if (ev.key === "Escape") { closeMap(); return; }
+  if (ev.key === "Escape") {   // 有選單展開時，先收選單；再按一次才關地圖
+    if (!$("#layer-opts").hidden || !$("#mode-opts").hidden) { setDD("layer", false); setDD("mode", false); } else closeMap();
+    return;
+  }
   if (ev.key === "Tab") {   // 簡易 focus trap
     const f = [...$("#modal .sheet").querySelectorAll("button, a[href], [tabindex]:not([tabindex='-1'])")].filter(x => !x.disabled && x.offsetParent !== null);
     if (!f.length) return;
