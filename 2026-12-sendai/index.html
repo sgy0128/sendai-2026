@@ -232,9 +232,9 @@
     display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
   .qnav-fab { width: 62px; height: 62px; border-radius: 50%; border: 2px solid #2B3A55; cursor: pointer; display: grid; place-items: center; padding: 0;
     background: #fff; box-shadow: 0 8px 22px rgba(31,27,22,.28); transition: transform .2s, box-shadow .2s; }
-  .qnav-fab img { width: 42px; height: 42px; display: block; transition: transform .3s; }
+  .qnav-fab img { width: 42px; height: 42px; display: block; transition: transform .6s cubic-bezier(.34,1.56,.64,1); }
   .qnav-fab:active { transform: scale(.94); }
-  .qnav.open .qnav-fab img { transform: rotate(-12deg) scale(1.06); }
+  .qnav.open .qnav-fab img { transform: rotate(-360deg) scale(1.06); } /* 開啟：逆時針轉一圈（帶點回彈）；關閉：轉回原位 */
   .qnav-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; align-items: flex-end;
     opacity: 0; transform: translateY(14px) scale(.96); pointer-events: none; visibility: hidden;
     transition: opacity .2s, transform .2s, visibility 0s .2s; }
@@ -246,7 +246,7 @@
   .qnav-list a:hover, .qnav-list a:focus-visible { background: var(--ai); color: var(--washi); }
   .qnav-list a:hover .n, .qnav-list a:focus-visible .n { color: var(--washi); }
   body.modal-open .qnav { display: none; }
-  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .qnav * { transition: none !important; } }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } } /* 已移除 .qnav 的停用動畫：即使系統開「減少動態效果」，導覽按鈕仍會旋轉 */
 
   /* ---------- 日別頁籤 ---------- */
   .tabs { display: flex; gap: 8px; overflow-x: auto; padding: 4px 2px 8px; scroll-snap-type: x proximity; }
