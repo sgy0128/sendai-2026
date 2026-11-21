@@ -629,7 +629,11 @@ footer span{background:none}
 /* ===== 地圖頁：小卡放在景點清單下方的獨立格子（不蓋住地圖，沒選到景點就不出現） ===== */
 .side { flex: none; width: 350px; display: grid; grid-template-rows: minmax(0, 1fr) auto; min-height: 0; }
 .side .stops { width: auto; min-height: 0; }
-.side .stop-detail { margin-top: 8px; max-height: 240px; }
+.side .stop-detail { margin-top: 8px; max-height: 300px; display: flex; flex-direction: column; overflow: hidden; }
+.stop-detail .pop-top, .stop-detail .pop-act { flex: none; }
+.sd-body { min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+.side .stops { min-height: 200px; }
+@media (min-width: 721px) { .sheet { height: min(96dvh, 900px); } .modal { padding: 8px; } }
 .stop-detail { position: relative; flex: none; max-height: 46%; overflow-y: auto; overscroll-behavior: contain; padding: 10px 38px 12px 12px; border-radius: 14px; background: #fff; border: 1px solid var(--shu); box-shadow: 0 0 0 2px rgba(232,135,58,.18); }
 .stop-detail[hidden] { display: none; }
 .sd-x { position: absolute; top: 7px; right: 8px; width: 26px; height: 26px; padding: 0; border-radius: 50%; border: 1px solid var(--edge); background: #fff; color: var(--sumi-2); font-size: 1.1rem; line-height: 1; cursor: pointer; }
@@ -646,7 +650,9 @@ footer span{background:none}
   .map-body { display: block; margin-top: 6px; }
   .map-col { display: flex; height: clamp(240px, 46dvh, 420px); }
   .side { width: auto; display: block; }
-  .side .stop-detail { margin-top: 6px; max-height: none; overflow: visible; overscroll-behavior: auto; touch-action: pan-y; }   /* 手機：小卡不自己捲動，手指放在小卡上也能帶動整頁上下滑 */
+  .side .stop-detail { margin-top: 6px; max-height: none; overflow: visible; overscroll-behavior: auto; touch-action: pan-y; display: block; }
+  .sd-body { overflow: visible; overscroll-behavior: auto; }
+  .side .stops { min-height: 0; }   /* 手機：小卡不自己捲動，手指放在小卡上也能帶動整頁上下滑 */
   .legal { margin-top: 10px; }
 }
 
@@ -1378,8 +1384,7 @@ function showDetail(k) {   // 小卡：獨立放在景點清單下方的格子�
       <div><span class="pop-tag" data-tag="${esc(e.tag)}">${esc(e.tag)}</span><b>${k + 1}. ${esc(e.name)}</b><span class="pop-t">${esc(e.t)}</span></div></div>
     <div class="pop-act"><a href="${searchUrl(e)}" target="_blank" rel="noopener">在 Google Maps 查看</a>
       <a class="go" href="https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(qOf(e))}" target="_blank" rel="noopener">導航到這裡</a></div>
-    ${e.note ? `<p class="pop-note">${esc(e.note)}</p>` : ""}
-    ${e.desc ? `<p class="pop-desc">${esc(e.desc)}</p>` : ""}`;
+    <div class="sd-body">${e.note ? `<p class="pop-note">${esc(e.note)}</p>` : ""}${e.desc ? `<p class="pop-desc">${esc(e.desc)}</p>` : ""}</div>`;
   d.hidden = false; d.scrollTop = 0;
 }
 $("#stop-detail").addEventListener("click", ev => { if (ev.target.closest("#sd-x")) { hideDetail(); selectStop(-1, false, { card: false }); } });
