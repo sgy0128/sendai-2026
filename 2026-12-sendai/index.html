@@ -569,6 +569,7 @@ footer span{background:none}
 .seg-l { font-size: .82rem; color: var(--sumi-2); flex: none; }
 .seg select { flex: 1; min-width: 0; min-height: 40px; padding: 4px 8px; font: inherit; font-size: .86rem; color: var(--sumi); background: var(--paper); border: 1px solid var(--edge); border-radius: 12px; }
 .seg-arrow { color: var(--shu); flex: none; }
+.seg #seg-all[hidden] { display: inline-flex; visibility: hidden; }
 .seg .btn { flex: none; min-height: 40px; padding: 4px 12px; font-size: .85rem; }
 .pin.sel { transform: scale(1.25); box-shadow: 0 0 0 4px rgba(232,135,58,.45), 0 3px 10px rgba(31,27,22,.45); z-index: 3; }
 .maplibregl-popup-content { padding: 12px 30px 12px 12px; box-shadow: 0 8px 24px rgba(31,27,22,.28); }
@@ -1123,6 +1124,15 @@ const STYLES = {
 };
 const LEGAL_BASE = "圖釘位置為概略位置。點圖釘可在 Google Maps 查確切位置，要導航請用右上方按鈕。地圖 © OpenFreeMap、OpenStreetMap contributors、Esri（彩色地圖）";
 
+function reserveLegal() {
+  const el = $("#legal"); if (!el) return;
+  el.style.minHeight = "";
+  let h = 0;
+  ["road", "walk", "line", ""].forEach(k => { setLegal(k); h = Math.max(h, el.offsetHeight); });
+  el.style.minHeight = h + "px";
+  setLegal(routeData ? (routeData.dashed ? "line" : "road") : "");
+}
+window.addEventListener("resize", () => { if ($("#modal").classList.contains("open")) { reserveLegal(); if (map) map.resize(); } });
 function setLegal(kind) {
   const el = $("#legal"); if (!el) return;
   el.textContent = LEGAL_BASE + (kind === "road"
@@ -1222,6 +1232,7 @@ function openMap(i) {
   routeData = null; drawRoute(); setLegal("");
 
   requestAnimationFrame(() => {
+    reserveLegal();   // 先把說明文字的高度固定成最長那一種，之後換文字地圖才不會被推動、跳一下
     map.resize();
     // 路線：只連 noRoute 以外的點（座標是 [lng, lat]）
     p.forEach((e, k) => {
@@ -1237,7 +1248,10 @@ function openMap(i) {
           ${desc ? `<p class="pop-desc">${esc(desc)}</p>` : ""}
           <div class="pop-act"><a href="${searchUrl(e)}" target="_blank" rel="noopener">在 Google Maps 查看</a>
           <a class="go" href="https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(qOf(e))}" target="_blank" rel="noopener">導航到這裡</a></div></div>`);
-      popup.on("open", () => selectStop(k, false));
+      popup.on("open", () => {
+        markers.forEach(o => { const pp = o.getPopup(); if (pp && pp !== popup && pp.isOpen()) pp.remove(); });   // 開新卡片時，其他卡片自動收起
+        selectStop(k, false);
+      });
       const m = new maplibregl.Marker({ element: el, anchor: "center" }).setLngLat([e.pos[1], e.pos[0]]).setPopup(popup).addTo(map);
       el.addEventListener("keydown", ev => { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); m.togglePopup(); } });
       markers.push(m);
@@ -1321,7 +1335,10 @@ function onSeg() {
 }
 $("#seg-a").addEventListener("change", onSeg);
 $("#seg-b").addEventListener("change", onSeg);
-$("#seg-all").addEventListener("click", () => { $("#seg-a").value = ""; $("#seg-b").value = ""; onSeg(); });
+$("#seg-all").addEventListener("click", () => {
+  markers.forEach(m => { const pp = m.getPopup(); if (pp && pp.isOpen()) pp.remove(); });   // 看全程 → 收起所有卡片，只看地圖
+  $("#seg-a").value = ""; $("#seg-b").value = ""; onSeg();
+});
 
 function fitAll() {
   if (!map || !fitState) return;
