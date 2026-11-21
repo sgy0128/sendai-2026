@@ -646,7 +646,7 @@ footer span{background:none}
   .map-body { display: block; margin-top: 6px; }
   .map-col { display: flex; height: clamp(240px, 46dvh, 420px); }
   .side { width: auto; display: block; }
-  .side .stop-detail { margin-top: 6px; max-height: none; }
+  .side .stop-detail { margin-top: 6px; max-height: none; overflow: visible; overscroll-behavior: auto; touch-action: pan-y; }   /* 手機：小卡不自己捲動，手指放在小卡上也能帶動整頁上下滑 */
   .legal { margin-top: 10px; }
 }
 
