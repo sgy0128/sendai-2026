@@ -570,7 +570,6 @@ footer span{background:none}
 .seg-l { font-size: .82rem; color: var(--sumi-2); flex: none; }
 .seg select { flex: 1; min-width: 0; min-height: 40px; padding: 4px 8px; font: inherit; font-size: .86rem; color: var(--sumi); background: var(--paper); border: 1px solid var(--edge); border-radius: 12px; }
 .seg-arrow { color: var(--shu); flex: none; }
-.seg #seg-all[hidden] { display: inline-flex; visibility: hidden; }
 .seg .btn { flex: none; min-height: 40px; padding: 4px 12px; font-size: .85rem; }
 .pin.sel { transform: scale(1.25); box-shadow: 0 0 0 4px rgba(232,135,58,.45), 0 3px 10px rgba(31,27,22,.45); z-index: 3; }
 .maplibregl-popup-content { padding: 12px 30px 12px 12px; box-shadow: 0 8px 24px rgba(31,27,22,.28); }
@@ -834,7 +833,7 @@ footer span{background:none}
       <select id="seg-a" aria-label="路段起點"></select>
       <span class="seg-arrow" aria-hidden="true">→</span>
       <select id="seg-b" aria-label="路段終點"></select>
-      <button class="btn ghost" id="seg-all" type="button" hidden>看全程</button>
+      <button class="btn ghost" id="seg-all" type="button">地圖總覽</button>
     </div>
     <div class="map-body">
       <div class="map-col">
@@ -1228,7 +1227,7 @@ function openMap(i) {
   { const opts = p.map((e, k) => e.noRoute ? "" : `<option value="${k}">${k + 1}. ${esc(e.name)}</option>`).join("");
     $("#seg-a").innerHTML = '<option value="">起點…</option>' + opts;
     $("#seg-b").innerHTML = '<option value="">終點…</option>' + opts;
-    $("#seg-all").hidden = true; }
+    $("#seg-all").textContent = "地圖總覽"; }
   markers.forEach(m => m.remove()); markers = [];
   routeData = null; drawRoute(); setLegal("");
 
@@ -1280,7 +1279,7 @@ function applyRoute(fit) {
   markers.forEach((m, i) => m.getElement().classList.toggle("dim", !!seg && i !== seg[0] && i !== seg[1]));
   $("#gmaps").href = routeUrl(d, list, curMode);
   $("#gmaps").title = seg ? (same ? "在 Google Maps 查看此地點" : "在 Google Maps 開啟此路段") : "在 Google Maps 開啟當日路線";
-  $("#seg-all").hidden = !seg;
+  $("#seg-all").textContent = seg ? "看全程" : "地圖總覽";
   $("#route-sum").hidden = true;
   if (same) { $("#route-sum").innerHTML = "<b>起點與終點相同</b><small>不顯示路徑</small>"; $("#route-sum").hidden = false; }
   routeData = null; drawRoute(); setLegal("");
@@ -1338,7 +1337,7 @@ $("#seg-a").addEventListener("change", onSeg);
 $("#seg-b").addEventListener("change", onSeg);
 $("#seg-all").addEventListener("click", () => {
   markers.forEach(m => { const pp = m.getPopup(); if (pp && pp.isOpen()) pp.remove(); });   // 看全程 → 收起所有卡片，只看地圖
-  $("#seg-a").value = ""; $("#seg-b").value = ""; onSeg();
+  $("#seg-a").value = ""; $("#seg-b").value = ""; selectStop(-1, false); onSeg();   // 沒選路段時＝回到全部景點的總覽
 });
 
 function fitAll() {
