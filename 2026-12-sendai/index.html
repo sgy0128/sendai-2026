@@ -676,6 +676,10 @@ footer span{background:none}
   .side .stop-detail { flex: none; width: 290px; margin-top: 0; max-height: none; align-self: stretch; }
   .side .stop-detail.empty { display: flex; border-style: dashed; border-color: var(--edge); box-shadow: none; background: rgba(255,255,255,.55); }
 }
+
+
+.opt-ico b { font-family: var(--mincho); font-size: 1.15rem; }
+@media (max-width: 560px) { .tools { gap: 6px; } .tools .btn { padding-left: 10px; padding-right: 10px; } }
 </style>
 </head>
 <body>
@@ -848,6 +852,13 @@ footer span{background:none}
       <button class="btn ghost" id="modal-close" type="button">關閉</button>
     </div>
     <div class="tools">
+      <div class="days dd" id="days">
+        <button class="btn ghost" id="day-toggle" type="button" aria-expanded="false" aria-haspopup="true" aria-controls="day-opts" title="切換日期">
+          <span id="day-label">第一日</span>
+          <svg class="dd-chev" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="dd-list" id="day-opts" hidden><p class="dd-title">切換日期</p></div>
+      </div>
       <div class="layers dd" id="layers">
         <button class="btn ghost layer-toggle" id="layer-toggle" type="button" aria-expanded="false" aria-haspopup="true" aria-controls="layer-opts" title="切換地圖樣式">
           <span id="layer-ico" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3s6 6.2 6 10.5a6 6 0 0 1-12 0C6 9.2 12 3 12 3z"/></svg></span><span id="layer-label">彩色地圖</span>
@@ -1264,9 +1275,25 @@ function loadMapLib() {
   return mapLibPromise;
 }
 window.addEventListener("load", () => setTimeout(() => loadMapLib().catch(() => {}), 1500));   // 背景預載：不拖慢首頁，也讓第一次開地圖不用等
+function renderDaySwitch(cur) {   // 地圖頁內直接切換日期（下拉選單，跟地圖樣式、交通方式同一種）
+  $("#day-label").textContent = `第${ZH[itinerary[cur].day]}日`;
+  $("#day-opts").innerHTML = '<p class="dd-title">切換日期</p>' + itinerary.map((x, k) => {
+    if (!pins(x).length) return "";
+    const { m, d: dd } = md(x);
+    return `<button class="btn ghost opt" type="button" data-goday="${k}" aria-pressed="${k === cur}"><span class="opt-ico"><b>${x.day}</b></span><span class="opt-sep"></span><span class="opt-label">第${ZH[x.day]}日　${m}/${dd}（${esc(x.wd)}）</span></button>`;
+  }).join("");
+}
+$("#day-opts").addEventListener("click", ev => {
+  const b = ev.target.closest("[data-goday]"); if (!b) return;
+  setDD("day", false);
+  if (b.getAttribute("aria-pressed") === "true") return;
+  openMap(+b.dataset.goday);
+});
 function openMap(i) {
   const d = itinerary[i], p = pins(d);
-  if (!$("#modal").classList.contains("open")) lastFocus = document.activeElement;
+  const wasOpen = $("#modal").classList.contains("open");
+  if (!wasOpen) lastFocus = document.activeElement;
+  renderDaySwitch(i);
   $("#modal-title").textContent = `第${ZH[d.day]}日 路線預覽`;
   { const { m, d: dd } = md(d);
     $("#modal-kicker").textContent = `DAY ${d.day} ・ ${m}月${dd}日（${d.wd}）`;
@@ -1277,7 +1304,7 @@ function openMap(i) {
   $("#modal").classList.add("open");
   $("#modal .sheet").scrollTop = 0;
   document.body.style.overflow = "hidden";
-  $("#modal-close").focus();
+  if (!wasOpen) $("#modal-close").focus();
 
   if (typeof maplibregl === "undefined") {   // 地圖元件還沒載入完 → 顯示載入中，載入後自動接著開
     $("#map").innerHTML = '<p class="map-error">地圖載入中…</p>'; $("#stops").innerHTML = "";
@@ -1471,21 +1498,23 @@ function setDD(id, open) {
   const t = $("#" + id + "-toggle"), o = $("#" + id + "-opts");
   const v = open === undefined ? o.hidden : open;
   o.hidden = !v; t.setAttribute("aria-expanded", String(v));
-  if (v) ["layer", "mode"].filter(x => x !== id).forEach(x => setDD(x, false));
+  if (v) ["layer", "mode", "day"].filter(x => x !== id).forEach(x => setDD(x, false));
 }
 const toggleLayers = open => setDD("layer", open);
 $("#layer-toggle").addEventListener("click", () => setDD("layer"));
 $("#mode-toggle").addEventListener("click", () => setDD("mode"));
+$("#day-toggle").addEventListener("click", () => setDD("day"));
 document.querySelectorAll("[data-base]").forEach(b => b.addEventListener("click", () => { setBase(b.dataset.base); toggleLayers(false); }));
 document.addEventListener("click", ev => {
   if (!ev.target.closest("#layers")) setDD("layer", false);
   if (!ev.target.closest("#modes")) setDD("mode", false);
+  if (!ev.target.closest("#days")) setDD("day", false);
 });
 document.addEventListener("keydown", ev => {
   const open = $("#modal").classList.contains("open");
   if (!open) return;
   if (ev.key === "Escape") {   // 有選單展開時，先收選單；再按一次才關地圖
-    if (!$("#layer-opts").hidden || !$("#mode-opts").hidden) { setDD("layer", false); setDD("mode", false); } else closeMap();
+    if (!$("#layer-opts").hidden || !$("#mode-opts").hidden || !$("#day-opts").hidden) { setDD("layer", false); setDD("mode", false); setDD("day", false); } else closeMap();
     return;
   }
   if (ev.key === "Tab") {   // 簡易 focus trap
