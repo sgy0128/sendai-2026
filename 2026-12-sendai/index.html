@@ -651,12 +651,12 @@ footer span{background:none}
 }
 
 /* ===== 景點格加大：選取景點與「設起點／設終點」之間拉開距離，避免點空或點錯 ===== */
-.stop { gap: 18px; padding: 10px 12px 10px 10px; }
+.stop { gap: 10px; padding: 8px 10px 8px 8px; cursor: pointer; }
 .stop-main { min-height: 46px; padding: 2px 0; }
 .stop-set { min-height: 44px; min-width: 76px; padding: 8px 16px; font-size: .82rem; }
 @media (max-width: 720px) {
-  .stop { width: 214px; padding: 10px; row-gap: 22px; column-gap: 8px; }
-  .stop-main { min-height: 48px; }
+  .stop { width: 200px; padding: 8px; row-gap: 6px; column-gap: 8px; }
+  .stop-main { min-height: 44px; }
   .stop-set { min-height: 46px; font-size: .88rem; }
   .stop::after { align-self: center; }
 }
@@ -1416,7 +1416,7 @@ $("#stops").addEventListener("click", ev => {
     }
     return;
   }
-  const c = ev.target.closest(".stop-main"); if (!c) return;
+  const c = ev.target.closest(".stop"); if (!c) return;   // 整張景點格都能點（含空白處），只有「設起點／設終點」按鈕例外
   selectStop(+c.dataset.k, true);   // 點景點本身：飛過去看，並在清單下方的格子顯示小卡；不影響路段
 });
 $("#fit").addEventListener("click", fitAll);
