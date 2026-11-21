@@ -593,7 +593,10 @@ footer span{background:none}
   .stop-set { grid-row: 2; grid-column: 2; text-align: center; padding: 6px 10px; }
   .stop:hover { transform: none; }
   .sheet-sub { font-size: .78rem; }
-  .route-sum { bottom: 30px; font-size: .78rem; padding: 6px 10px; }
+  /* 手機：路程時間縮成一小塊，放到右上角（縮放按鈕下方），不再佔掉地圖下方 */
+  .route-sum { left: auto; right: 10px; top: 80px; bottom: auto; flex-direction: column; flex-wrap: nowrap; align-items: flex-end; gap: 0; max-width: 46%; padding: 5px 9px; border-radius: 12px; font-size: .72rem; line-height: 1.35; text-align: right; }
+  .route-sum b { font-size: .84rem; }
+  .route-sum small { display: none; }
 }
 
 .btn{align-items:center;line-height:1.2}
