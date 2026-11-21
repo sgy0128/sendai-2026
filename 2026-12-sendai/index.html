@@ -21,8 +21,7 @@
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Shippori+Mincho:wght@500;700&display=swap"></noscript>
 
 <!-- 地圖：MapLibre GL（向量地圖）＋ OpenFreeMap（免金鑰）＋ OSRM（實際道路路線） -->
-<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" media="print" onload="this.media='all'">
-<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js" defer></script>
+<!-- 地圖元件（約 800KB）不在開頁時載入：頁面載入完 1.5 秒後才在背景載入，或第一次按「路線預覽」時才載入（見 loadMapLib） -->
 
 <style>
   :root {
@@ -504,28 +503,6 @@ footer span{background:none}
   .pdf417.h { display: block; flex: 1; width: auto; min-width: 0; height: 44px; }
   .ticket::before { left: -9px; top: calc(100% - var(--stubh) - 9px); }
   .ticket::after { left: auto; right: -9px; bottom: auto; top: calc(100% - var(--stubh) - 9px); }
-}
-/* ===== 手機版機票 G1：大代碼＋時間列＋膠囊＋條碼票根 ===== */
-@media (max-width: 560px) {
-  .ticket { --stubh: 82px; box-shadow: 0 8px 22px rgba(42,53,80,.1); }
-  .tk-head { padding: 11px 16px; font-size: .78rem; letter-spacing: .08em; }
-  .tk-head b { font-size: .86rem; letter-spacing: .08em; }
-  .tk-body { padding: 14px 16px 14px; background-image: none; }
-  .code b { font-size: 2.7rem; font-weight: 600; letter-spacing: .03em; }
-  .code span { font-size: .72rem; opacity: .75; margin-top: 6px; }
-  .codes { align-items: flex-end; }
-  .fly { padding-bottom: 22px; }
-  .fields { grid-template-columns: 1fr auto 1fr; gap: 6px 8px; margin-top: 4px; padding-top: 10px; border-top: 0; }
-  .fields div:nth-child(1) { order: 1; }
-  .fields div:nth-child(3) { order: 2; align-items: center; text-align: center; }
-  .fields div:nth-child(2) { order: 3; align-items: flex-end; text-align: right; }
-  .fields div:nth-child(4) { order: 4; grid-column: 1 / -1; flex-direction: row; align-items: center; gap: 8px; margin-top: 6px;
-    background: #EEF3F7; border-radius: 999px; padding: 6px 14px; width: max-content; }
-  .fields div:nth-child(4) strong { margin-top: 0; font-size: .9rem; }
-  .fields strong { font-size: 1.02rem; }
-  .ticket .stub { padding: 0 16px; gap: 12px; border-top: 2px dashed rgba(44,66,111,.28); }
-  .stub .fn { font-size: 1.15rem; }
-  .pdf417.h { height: 46px; padding: 8px 10px; box-sizing: border-box; height: 56px; background: #fff; border: 1px dashed #c9d3de; border-radius: 12px; }
 }
 .info-in .src { display: inline-block; padding: 6px 0; }
 /* ===== 地圖頁面強化 ===== */
@@ -1274,9 +1251,22 @@ async function fetchRoadRoute(coords, token, M) {
   finally { clearTimeout(timer); }
 }
 
+const MAPLIB = "https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl";
+let mapLibPromise = null;
+function loadMapLib() {
+  if (typeof maplibregl !== "undefined") return Promise.resolve();
+  if (!mapLibPromise) mapLibPromise = new Promise((res, rej) => {
+    const l = document.createElement("link"); l.rel = "stylesheet"; l.href = MAPLIB + ".css"; document.head.appendChild(l);
+    const sc = document.createElement("script"); sc.src = MAPLIB + ".js";
+    sc.onload = () => res(); sc.onerror = () => { mapLibPromise = null; sc.remove(); l.remove(); rej(new Error("maplibre")); };
+    document.head.appendChild(sc);
+  });
+  return mapLibPromise;
+}
+window.addEventListener("load", () => setTimeout(() => loadMapLib().catch(() => {}), 1500));   // 背景預載：不拖慢首頁，也讓第一次開地圖不用等
 function openMap(i) {
   const d = itinerary[i], p = pins(d);
-  lastFocus = document.activeElement;
+  if (!$("#modal").classList.contains("open")) lastFocus = document.activeElement;
   $("#modal-title").textContent = `第${ZH[d.day]}日 路線預覽`;
   { const { m, d: dd } = md(d);
     $("#modal-kicker").textContent = `DAY ${d.day} ・ ${m}月${dd}日（${d.wd}）`;
@@ -1289,7 +1279,13 @@ function openMap(i) {
   document.body.style.overflow = "hidden";
   $("#modal-close").focus();
 
-  let ok = typeof maplibregl !== "undefined";
+  if (typeof maplibregl === "undefined") {   // 地圖元件還沒載入完 → 顯示載入中，載入後自動接著開
+    $("#map").innerHTML = '<p class="map-error">地圖載入中…</p>'; $("#stops").innerHTML = "";
+    loadMapLib().then(() => { if ($("#modal").classList.contains("open")) openMap(i); })
+      .catch(() => { $("#map").innerHTML = '<p class="map-error">地圖元件載入失敗，請確認網路後重新整理。你仍可用右上方按鈕在 Google Maps 開啟路線。</p>'; });
+    return;
+  }
+  let ok = true;
   try { if (ok && !maplibregl.supported()) ok = false; } catch (e) {}
   if (!ok) {
     $("#map").innerHTML = '<p class="map-error">地圖元件載入失敗（或此裝置不支援 WebGL），請確認網路後重新整理。你仍可用右上方按鈕在 Google Maps 開啟路線。</p>';
