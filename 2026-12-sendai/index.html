@@ -526,8 +526,7 @@ footer span{background:none}
   box-shadow: 0 3px 10px rgba(31,27,22,.16); }
 .map-fab:hover { background: var(--ai); color: #fff; }
 .stops { flex: none; width: 350px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; padding: 2px 4px 2px 0; overscroll-behavior: contain; }
-.stop-row { display: flex; align-items: center; gap: 10px; padding: 8px 12px 8px 8px; }
-.stop { display: block; text-align: left; width: 100%; padding: 0; overflow: hidden; border-radius: 14px; cursor: pointer;
+.stop { display: flex; align-items: center; gap: 10px; text-align: left; width: 100%; padding: 8px 12px 8px 8px; border-radius: 14px; cursor: pointer;
   background: rgba(244,247,250,.9); border: 1px solid var(--edge); color: var(--sumi); font-family: inherit; transition: background .15s, border-color .15s, transform .15s; }
 @media (hover: hover) { .stop:hover { background: #fff; transform: translateX(-2px); } }
 .stop.on { background: #fff; border-color: var(--shu); box-shadow: 0 0 0 2px rgba(232,135,58,.25); }
@@ -554,10 +553,10 @@ footer span{background:none}
 .stops-hint { margin: 0 0 2px; font-size: .74rem; line-height: 1.5; color: var(--sumi-2); }
 .home-btn { position: absolute; top: calc(12px + env(safe-area-inset-top)); left: 12px; z-index: 5; padding: 7px 14px; border-radius: 999px; font-size: .86rem; font-weight: 700; letter-spacing: .06em; text-decoration: none; color: var(--ai); background: rgba(255,255,255,.88); border: 1px solid rgba(44,66,111,.25); box-shadow: 0 3px 10px rgba(31,27,22,.2); }
 .home-btn:active { transform: scale(.96); }
-.stop-row::after { content: "起＝終"; visibility: hidden; order: 1; min-width: 3.4em; text-align: center; margin-left: auto; flex: none; font-size: .68rem; font-weight: 700; padding: 1px 8px; border-radius: 999px; color: #fff; letter-spacing: .06em; }
-.stop[data-role="a"] .stop-row::after { content: "起點"; visibility: visible; background: var(--shu); }
-.stop[data-role="b"] .stop-row::after { content: "終點"; visibility: visible; background: var(--ai); }
-.stop[data-role="ab"] .stop-row::after { content: "起＝終"; visibility: visible; background: var(--sumi-2); }
+.stop::after { content: "起＝終"; visibility: hidden; order: 1; min-width: 3.4em; text-align: center; margin-left: auto; flex: none; font-size: .68rem; font-weight: 700; padding: 1px 8px; border-radius: 999px; color: #fff; letter-spacing: .06em; }
+.stop[data-role="a"]::after { content: "起點"; visibility: visible; background: var(--shu); }
+.stop[data-role="b"]::after { content: "終點"; visibility: visible; background: var(--ai); }
+.stop[data-role="ab"]::after { content: "起＝終"; visibility: visible; background: var(--sumi-2); }
 .stop[data-role="a"] { border-color: var(--shu); }
 .stop[data-role="b"] { border-color: var(--ai); }
 @media (max-width: 720px) { .stops-hint { display: none; } }
@@ -580,6 +579,11 @@ footer span{background:none}
 .pop-act a.go { background: var(--ai); color: #fff; }
 @media (max-width: 720px) {
   .map-body { flex-direction: column; gap: 8px; }
+  .stops { width: auto; flex-direction: row; overflow-x: auto; overflow-y: hidden; padding: 2px 0 6px; }
+  .stop { flex: none; width: 190px; display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 6px; padding: 8px; }
+  .stop-main { grid-column: 1 / -1; }
+  .stop::after { grid-row: 2; grid-column: 1; margin-left: 0; }
+  .stop-set { grid-row: 2; grid-column: 2; text-align: center; padding: 6px 10px; }
   .stop:hover { transform: none; }
   .sheet-sub { font-size: .78rem; }
   /* 手機：路程時間縮成一小塊，放到右上角（縮放按鈕下方），不再佔掉地圖下方 */
@@ -622,9 +626,14 @@ footer span{background:none}
   .dd > .btn.ghost[aria-expanded="true"] { background: var(--nv); border-color: var(--nv); color: var(--washi); }
   @media (prefers-reduced-motion: reduce) { .dd .dd-list { animation: none; } .dd-chev { transition: none; } }
 
-/* ===== 地圖頁：可上下滑動；景點小卡展開在清單裡 ===== */
-.stop-card { display: none; margin: 0 10px 10px; padding: 10px 2px 0; border-top: 1px dashed var(--edge); }
-.stop.open .stop-card { display: block; }
+/* ===== 地圖頁：小卡放在景點清單下方的獨立格子（不蓋住地圖，沒選到景點就不出現） ===== */
+.side { flex: none; width: 350px; display: grid; grid-template-rows: minmax(0, 1fr) auto; min-height: 0; }
+.side .stops { width: auto; min-height: 0; }
+.side .stop-detail { margin-top: 8px; max-height: 240px; }
+.stop-detail { position: relative; flex: none; max-height: 46%; overflow-y: auto; overscroll-behavior: contain; padding: 10px 38px 12px 12px; border-radius: 14px; background: #fff; border: 1px solid var(--shu); box-shadow: 0 0 0 2px rgba(232,135,58,.18); }
+.stop-detail[hidden] { display: none; }
+.sd-x { position: absolute; top: 7px; right: 8px; width: 26px; height: 26px; padding: 0; border-radius: 50%; border: 1px solid var(--edge); background: #fff; color: var(--sumi-2); font-size: 1.1rem; line-height: 1; cursor: pointer; }
+.stop-detail .pop-act { margin-top: 8px; }
 .tools { margin-top: 6px; gap: 6px; }
 .tools .btn { min-height: 36px; padding: 3px 12px; }
 .seg { margin-top: 6px; }
@@ -635,9 +644,21 @@ footer span{background:none}
   .sheet-head h3 { font-size: 1.15rem; }
   .sheet-sub { margin-top: 1px; }
   .map-body { display: block; margin-top: 6px; }
-  .map-col { display: flex; height: clamp(260px, 50dvh, 460px); }
-  .stops { width: auto; overflow: visible; flex-direction: column; padding: 8px 0 0; }
+  .map-col { display: flex; height: clamp(240px, 46dvh, 420px); }
+  .side { width: auto; display: block; }
+  .side .stop-detail { margin-top: 6px; max-height: none; }
   .legal { margin-top: 10px; }
+}
+
+/* ===== 景點格加大：選取景點與「設起點／設終點」之間拉開距離，避免點空或點錯 ===== */
+.stop { gap: 18px; padding: 10px 12px 10px 10px; }
+.stop-main { min-height: 46px; padding: 2px 0; }
+.stop-set { min-height: 44px; min-width: 76px; padding: 8px 16px; font-size: .82rem; }
+@media (max-width: 720px) {
+  .stop { width: 214px; padding: 10px; row-gap: 22px; column-gap: 8px; }
+  .stop-main { min-height: 48px; }
+  .stop-set { min-height: 46px; font-size: .88rem; }
+  .stop::after { align-self: center; }
 }
 </style>
 </head>
@@ -853,7 +874,10 @@ footer span{background:none}
           <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>全覽
         </button>
       </div>
-      <div class="stops" id="stops" role="list" aria-label="今日景點"></div>
+      <div class="side">
+        <div class="stops" id="stops" role="list" aria-label="今日景點"></div>
+        <section class="stop-detail pop" id="stop-detail" aria-live="polite" hidden></section>
+      </div>
     </div>
     <p class="legal" id="legal">圖釘位置為概略位置。點圖釘可在 Google Maps 查確切位置，要導航請用右上方按鈕。地圖 © OpenFreeMap、OpenStreetMap contributors；路線 © OSRM。</p>
   </div>
@@ -1234,7 +1258,7 @@ function openMap(i) {
     return;
   }
   if (!map) { $("#map").innerHTML = ""; initMap(); }
-  curDay = i; curPins = p; seg = null; pickStep = 0;
+  curDay = i; curPins = p; seg = null; pickStep = 0; hideDetail();
   { const opts = p.map((e, k) => e.noRoute ? "" : `<option value="${k}">${k + 1}. ${esc(e.name)}</option>`).join("");
     $("#seg-a").innerHTML = '<option value="">起點…</option>' + opts;
     $("#seg-b").innerHTML = '<option value="">終點…</option>' + opts;
@@ -1251,7 +1275,7 @@ function openMap(i) {
       el.className = "pin" + (e.noRoute ? " norte" : ""); el.dataset.tag = e.tag; el.textContent = k + 1;
       el.setAttribute("role", "button"); el.tabIndex = 0; el.title = e.name; el.setAttribute("aria-label", `${k + 1}. ${e.name}`);
       const m = new maplibregl.Marker({ element: el, anchor: "center" }).setLngLat([e.pos[1], e.pos[0]]).addTo(map);
-      const tapPin = () => { selectStop(k, false, { card: true, scroll: !MOBILE.matches }); };   // 手機點圖釘：只標示並展開下方卡片，不把畫面捲離地圖
+      const tapPin = () => selectStop(k, false, { card: true });
       el.addEventListener("click", ev => { ev.stopPropagation(); tapPin(); });
       el.addEventListener("keydown", ev => { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); tapPin(); } });
       markers.push(m);
@@ -1261,23 +1285,13 @@ function openMap(i) {
   });
 
   $("#stops").innerHTML = '<p class="stops-hint">點景點本身＝看位置；按右邊「設起點／設終點」才加入上方路段（選同一個就不畫路徑）</p>' + p.map((e, k) => `<div class="stop" role="listitem" data-k="${k}">
-    <div class="stop-row">
-    <button class="stop-main" type="button" data-k="${k}" aria-expanded="false"><span class="n" data-tag="${esc(e.tag)}">${k + 1}</span>
+    <button class="stop-main" type="button" data-k="${k}"><span class="n" data-tag="${esc(e.tag)}">${k + 1}</span>
     <span class="s-main"><b>${esc(e.name)}</b><small>${esc(e.t)} ・ ${esc(e.tag)}${e.noRoute ? " ・ 不計入路線" : ""}</small></span></button>
-    ${e.noRoute ? "" : `<button class="stop-set" type="button" data-set="${k}">設起點</button>`}</div>
-    <div class="stop-card pop">
-      <div class="pop-top">${e.icon || ICONS[e.icon] ? `<img src="${ICONS[e.icon] || ICONS.fox}" alt="" width="42" height="42">` : ""}
-        <div><span class="pop-tag" data-tag="${esc(e.tag)}">${esc(e.tag)}</span><span class="pop-t">${esc(e.t)}</span></div></div>
-      ${e.note ? `<p class="pop-note">${esc(e.note)}</p>` : ""}
-      ${e.desc ? `<p class="pop-desc">${esc(e.desc)}</p>` : ""}
-      <div class="pop-act"><a href="${searchUrl(e)}" target="_blank" rel="noopener">在 Google Maps 查看</a>
-      <a class="go" href="https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(qOf(e))}" target="_blank" rel="noopener">導航到這裡</a></div>
-    </div></div>`).join("");
+    ${e.noRoute ? "" : `<button class="stop-set" type="button" data-set="${k}">設起點</button>`}</div>`).join("");
   syncSetBtns();
   $("#stops").scrollTop = 0;
 }
 
-const MOBILE = window.matchMedia("(max-width: 720px)");
 let curMode = "driving", curDay = 0, curPins = [], seg = null, pickStep = 0, fitState = null;   // pickStep：0＝下一次點清單設「起點」，1＝設「終點」
 /* 畫路線：seg 為 null 時畫整天，否則只畫選定的兩個地點之間 */
 function applyRoute(fit) {
@@ -1355,18 +1369,30 @@ function fitAll() {
   if (fitState.bnd) map.fitBounds(fitState.bnd, { padding: 60, maxZoom: 15, duration: 600 });
   else if (fitState.single) map.flyTo({ center: fitState.single, zoom: 15, duration: 600 });
 }
+const MOBILE_Q = window.matchMedia("(max-width: 720px)");
+function hideDetail() { const d = $("#stop-detail"); d.hidden = true; d.innerHTML = ""; }
+function showDetail(k) {   // 小卡：獨立放在景點清單下方的格子，不蓋住地圖；沒選到景點就不出現
+  const e = curPins[k], d = $("#stop-detail"); if (!e) return hideDetail();
+  d.innerHTML = `<button class="sd-x" type="button" id="sd-x" aria-label="收起">×</button>
+    <div class="pop-top">${e.icon || ICONS[e.icon] ? `<img src="${ICONS[e.icon] || ICONS.fox}" alt="" width="42" height="42">` : ""}
+      <div><span class="pop-tag" data-tag="${esc(e.tag)}">${esc(e.tag)}</span><b>${k + 1}. ${esc(e.name)}</b><span class="pop-t">${esc(e.t)}</span></div></div>
+    <div class="pop-act"><a href="${searchUrl(e)}" target="_blank" rel="noopener">在 Google Maps 查看</a>
+      <a class="go" href="https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(qOf(e))}" target="_blank" rel="noopener">導航到這裡</a></div>
+    ${e.note ? `<p class="pop-note">${esc(e.note)}</p>` : ""}
+    ${e.desc ? `<p class="pop-desc">${esc(e.desc)}</p>` : ""}`;
+  d.hidden = false; d.scrollTop = 0;
+}
+$("#stop-detail").addEventListener("click", ev => { if (ev.target.closest("#sd-x")) { hideDetail(); selectStop(-1, false, { card: false }); } });
 function selectStop(k, fly, o = {}) {
-  const card = o.card !== false && k >= 0, scroll = o.scroll !== false;
-  document.querySelectorAll("#stops .stop").forEach(x => {
-    const on = +x.dataset.k === k;
-    x.classList.toggle("on", on);
-    x.classList.toggle("open", on && card);   // 只有被選到、且要看詳情的那一個才展開小卡
-    const mb = x.querySelector(".stop-main"); if (mb) mb.setAttribute("aria-expanded", String(on && card));
-  });
+  document.querySelectorAll("#stops .stop").forEach(x => x.classList.toggle("on", +x.dataset.k === k));
   markers.forEach((m, i) => m.getElement().classList.toggle("sel", i === k));
-  const on = k >= 0 && $("#stops .stop.on");
-  if (on && scroll) on.scrollIntoView({ block: "nearest", inline: "nearest", behavior: "smooth" });
   if (fly && k >= 0 && markers[k]) map.flyTo({ center: markers[k].getLngLat(), zoom: Math.max(map.getZoom(), 14), duration: 600 });
+  if (k >= 0 && o.card !== false) showDetail(k); else hideDetail();
+  const on = k >= 0 && $("#stops .stop.on");
+  if (on) { const sc = $("#stops"); const r = on.getBoundingClientRect(), c = sc.getBoundingClientRect();   // 只在清單／橫條內部捲動，不連帶捲動整頁
+    if (MOBILE_Q.matches) { if (r.left < c.left || r.right > c.right) sc.scrollTo({ left: sc.scrollLeft + (r.left < c.left ? r.left - c.left - 8 : r.right - c.right + 8), behavior: "smooth" }); }
+    else if (r.top < c.top || r.bottom > c.bottom) sc.scrollTo({ top: sc.scrollTop + (r.top < c.top ? r.top - c.top - 4 : r.bottom - c.bottom + 4), behavior: "smooth" }); }
+  if (k >= 0 && o.card !== false && MOBILE_Q.matches) $("#stop-detail").scrollIntoView({ block: "nearest", behavior: "smooth" });
 }
 
 function closeMap() {
@@ -1384,16 +1410,14 @@ $("#stops").addEventListener("click", ev => {
   const set = ev.target.closest(".stop-set");
   if (set) {   // 「設起點／設終點」按鈕：第一次設起點，第二次設終點，畫出這一段
     const k = +set.dataset.set;
-    if (pickStep === 0) { $("#seg-a").value = String(k); $("#seg-b").value = ""; onSeg(); selectStop(k, true, { card: false, scroll: false }); }
+    if (pickStep === 0) { $("#seg-a").value = String(k); $("#seg-b").value = ""; onSeg(); selectStop(k, true, { card: false }); }
     else {
-      $("#seg-b").value = String(k); onSeg(); selectStop(k, false, { card: false, scroll: false });
+      $("#seg-b").value = String(k); onSeg(); selectStop(k, false, { card: false });
     }
     return;
   }
   const c = ev.target.closest(".stop-main"); if (!c) return;
-  const k = +c.dataset.k, row = c.closest(".stop");
-  if (row.classList.contains("open")) selectStop(k, false, { card: false, scroll: false });   // 再點一次 → 收起小卡
-  else selectStop(k, true, { scroll: true });   // 點景點本身：飛過去看，並在下方展開小卡；不影響路段
+  selectStop(+c.dataset.k, true);   // 點景點本身：飛過去看，並在清單下方的格子顯示小卡；不影響路段
 });
 $("#fit").addEventListener("click", fitAll);
 function syncModes() {
