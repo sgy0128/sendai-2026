@@ -666,6 +666,17 @@ footer span{background:none}
   .stop-set { min-height: 46px; font-size: .88rem; }
   .stop::after { align-self: center; }
 }
+
+/* 電腦版（寬螢幕）：地圖｜景點清單｜小卡 三欄並排，小卡有自己固定的一欄，不會擠到清單 */
+.side .stop-detail.empty { display: none; }
+.sd-empty { margin: auto; text-align: center; font-size: .82rem; line-height: 1.7; color: var(--sumi-2); }
+@media (min-width: 1000px) {
+  .sheet { max-width: 1240px; }
+  .side { display: contents; }
+  .side .stops { flex: none; width: 320px; min-height: 0; }
+  .side .stop-detail { flex: none; width: 290px; margin-top: 0; max-height: none; align-self: stretch; }
+  .side .stop-detail.empty { display: flex; border-style: dashed; border-color: var(--edge); box-shadow: none; background: rgba(255,255,255,.55); }
+}
 </style>
 </head>
 <body>
@@ -1376,7 +1387,7 @@ function fitAll() {
   else if (fitState.single) map.flyTo({ center: fitState.single, zoom: 15, duration: 600 });
 }
 const MOBILE_Q = window.matchMedia("(max-width: 720px)");
-function hideDetail() { const d = $("#stop-detail"); d.hidden = true; d.innerHTML = ""; }
+function hideDetail() { const d = $("#stop-detail"); d.hidden = false; d.classList.add("empty"); d.innerHTML = '<p class="sd-empty">點選左邊的景點，<br>詳細資訊會顯示在這裡</p>'; }
 function showDetail(k) {   // 小卡：獨立放在景點清單下方的格子，不蓋住地圖；沒選到景點就不出現
   const e = curPins[k], d = $("#stop-detail"); if (!e) return hideDetail();
   d.innerHTML = `<button class="sd-x" type="button" id="sd-x" aria-label="收起">×</button>
@@ -1385,7 +1396,7 @@ function showDetail(k) {   // 小卡：獨立放在景點清單下方的格子�
     <div class="pop-act"><a href="${searchUrl(e)}" target="_blank" rel="noopener">在 Google Maps 查看</a>
       <a class="go" href="https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(qOf(e))}" target="_blank" rel="noopener">導航到這裡</a></div>
     <div class="sd-body">${e.note ? `<p class="pop-note">${esc(e.note)}</p>` : ""}${e.desc ? `<p class="pop-desc">${esc(e.desc)}</p>` : ""}</div>`;
-  d.hidden = false; d.scrollTop = 0;
+  d.hidden = false; d.classList.remove("empty"); d.scrollTop = 0;
 }
 $("#stop-detail").addEventListener("click", ev => { if (ev.target.closest("#sd-x")) { hideDetail(); selectStop(-1, false, { card: false }); } });
 function selectStop(k, fly, o = {}) {
